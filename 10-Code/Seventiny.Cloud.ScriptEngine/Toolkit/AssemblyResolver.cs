@@ -26,7 +26,7 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
             var baseLibPath = AppDomain.CurrentDomain.BaseDirectory;
             //var baseLibPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.SetupInformation.PrivateBinPath ?? "");
             //string appName = ConfigurationManager.AppSettings[DynamicScriptConst.AppName];
-            //string cloudAppName = ConfigurationManager.AppSettings[DynamicScriptConst.BeisenCloudAppName];
+            //string cloudAppName = ConfigurationManager.AppSettings[DynamicScriptConst.CloudAppName];
             //var appLibPath = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath,
             //    string.IsNullOrEmpty(cloudAppName) ? DynamicScriptConst.Common : cloudAppName,
             //    string.IsNullOrEmpty(appName) ? "" : appName);
