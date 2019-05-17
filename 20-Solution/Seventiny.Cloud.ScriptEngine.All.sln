@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seventiny.Cloud.ScriptEngine", "..\10-Code\Seventiny.Cloud.ScriptEngine\Seventiny.Cloud.ScriptEngine.csproj", "{D4BC325B-6D64-49D2-A364-DD1BE5FC1585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seventiny.Cloud.ScriptEngine", "..\10-Code\Seventiny.Cloud.ScriptEngine\Seventiny.Cloud.ScriptEngine.csproj", "{D4BC325B-6D64-49D2-A364-DD1BE5FC1585}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{3FB61CC9-D93D-4862-A444-EB3C05F44020}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Seventiny.Cloud.ScriptEngine", "..\10-Code\Tests\Test.Seventiny.Cloud.ScriptEngine\Test.Seventiny.Cloud.ScriptEngine.csproj", "{6DE30280-F375-43FC-87F7-0167347670DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{D4BC325B-6D64-49D2-A364-DD1BE5FC1585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4BC325B-6D64-49D2-A364-DD1BE5FC1585}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4BC325B-6D64-49D2-A364-DD1BE5FC1585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DE30280-F375-43FC-87F7-0167347670DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DE30280-F375-43FC-87F7-0167347670DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DE30280-F375-43FC-87F7-0167347670DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DE30280-F375-43FC-87F7-0167347670DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6DE30280-F375-43FC-87F7-0167347670DC} = {3FB61CC9-D93D-4862-A444-EB3C05F44020}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FBE79796-2006-401D-A73B-A1D480D80DC2}

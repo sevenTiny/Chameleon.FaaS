@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace Seventiny.Cloud.ScriptEngine.Toolkit
 {
-    public class AssemblyResolver
+    internal class AssemblyResolver
     {
         private bool _hasInit;
         private readonly List<string> _searchPaths = new List<string>();
@@ -20,23 +23,26 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
 
         private AssemblyResolver()
         {
-            var baseLibPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-                AppDomain.CurrentDomain.SetupInformation.PrivateBinPath ?? "");
-            string appName = ConfigurationManager.AppSettings[DynamicScriptConst.AppName];
-            string cloudAppName = ConfigurationManager.AppSettings[DynamicScriptConst.BeisenCloudAppName];
-            var appLibPath = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath,
-                string.IsNullOrEmpty(cloudAppName) ? DynamicScriptConst.Common : cloudAppName,
-                string.IsNullOrEmpty(appName) ? "" : appName);
+            var baseLibPath = AppDomain.CurrentDomain.BaseDirectory;
+            //var baseLibPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.SetupInformation.PrivateBinPath ?? "");
+            //string appName = ConfigurationManager.AppSettings[DynamicScriptConst.AppName];
+            //string cloudAppName = ConfigurationManager.AppSettings[DynamicScriptConst.BeisenCloudAppName];
+            //var appLibPath = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath,
+            //    string.IsNullOrEmpty(cloudAppName) ? DynamicScriptConst.Common : cloudAppName,
+            //    string.IsNullOrEmpty(appName) ? "" : appName);
 
             _searchPaths.Add(baseLibPath);
-            _searchPaths.Add(appLibPath);
-            Tools.CreateDirectory(appLibPath);
-            DirectoryInfo[] subdirs = new DirectoryInfo(appLibPath).GetDirectories("*", SearchOption.AllDirectories);
-            foreach (DirectoryInfo dir in subdirs)
-            {
-                if (!_searchPaths.Contains(dir.FullName))
-                    _searchPaths.Add(dir.FullName);
-            }
+            //_searchPaths.Add(appLibPath);
+
+            //if (!Directory.Exists(appLibPath))
+            //    Directory.CreateDirectory(appLibPath);
+
+            //DirectoryInfo[] subdirs = new DirectoryInfo(appLibPath).GetDirectories("*", SearchOption.AllDirectories);
+            //foreach (DirectoryInfo dir in subdirs)
+            //{
+            //    if (!_searchPaths.Contains(dir.FullName))
+            //        _searchPaths.Add(dir.FullName);
+            //}
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             _hasInit = true;
         }
@@ -59,23 +65,23 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
             return _hasInit;
         }
 
-        public void AddAppPath(string applicationName)
-        {
-            string path = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath, applicationName);
-            if (!_searchPaths.Contains(path))
-            {
-                _searchPaths.Add(path);
-            }
-        }
+        //public void AddAppPath(string applicationName)
+        //{
+        //    string path = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath, applicationName);
+        //    if (!_searchPaths.Contains(path))
+        //    {
+        //        _searchPaths.Add(path);
+        //    }
+        //}
 
-        public void AddTanantPath(int tenantId)
-        {
-            string path = Path.Combine(DynamicScriptEngineSettings.Instance.TenantLibPath, tenantId.ToString());
-            if (!_searchPaths.Contains(path))
-            {
-                _searchPaths.Add(path);
-            }
-        }
+        //public void AddTanantPath(int tenantId)
+        //{
+        //    string path = Path.Combine(DynamicScriptEngineSettings.Instance.TenantLibPath, tenantId.ToString());
+        //    if (!_searchPaths.Contains(path))
+        //    {
+        //        _searchPaths.Add(path);
+        //    }
+        //}
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {

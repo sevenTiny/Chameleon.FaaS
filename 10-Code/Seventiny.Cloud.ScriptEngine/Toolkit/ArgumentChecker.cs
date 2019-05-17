@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Seventiny.Cloud.ScriptEngine.Toolkit
 {
-    public static class ArgumentChecker
+    internal static class ArgumentChecker
     {
         public static void NotNullOrEmpty(string arg, string argName)
         {

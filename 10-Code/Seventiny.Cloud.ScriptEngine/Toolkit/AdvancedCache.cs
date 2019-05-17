@@ -78,9 +78,7 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
         /// that are collectible and Permanent for objects you wish to keep forever).</param>
         public void Insert(TKey key, TValue value, CacheStrategy strategy)
         {
-            entries[key] = strategy == CacheStrategy.Temporary
-                ? new WeakReference(value)
-                : value as object;
+            entries[key] = strategy == CacheStrategy.Temporary ? new WeakReference(value) : value as object;
         }
         #endregion
 
