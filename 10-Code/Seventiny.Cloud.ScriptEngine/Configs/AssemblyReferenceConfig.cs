@@ -5,9 +5,9 @@ using System.Linq;
 namespace Seventiny.Cloud.ScriptEngine.Configs
 {
     [ConfigName("ScriptEngine_AssemblyReference")]
-    internal class ScriptEngine_AssemblyReferenceConfig : MySqlRowConfigBase<ScriptEngine_AssemblyReferenceConfig>
+    internal class AssemblyReferenceConfig : MySqlRowConfigBase<AssemblyReferenceConfig>
     {
-        public static ScriptEngine_AssemblyReferenceConfig Instance = new ScriptEngine_AssemblyReferenceConfig();
+        public static AssemblyReferenceConfig Instance = new AssemblyReferenceConfig();
         protected override string _ConnectionString => GetConnectionStringFromAppSettings("SevenTinyConfig");
 
         [ConfigProperty]

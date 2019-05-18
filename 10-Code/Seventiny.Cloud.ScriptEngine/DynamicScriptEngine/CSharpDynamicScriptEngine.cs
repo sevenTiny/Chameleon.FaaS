@@ -1,13 +1,12 @@
 ﻿using Fasterflect;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Newtonsoft.Json;
 using Seventiny.Cloud.ScriptEngine.Configs;
-using Seventiny.Cloud.ScriptEngine.Context;
 using Seventiny.Cloud.ScriptEngine.RefrenceManager;
 using Seventiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina;
 using SevenTiny.Bantina.Security;
+using SevenTiny.Bantina.Validation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,23 +20,17 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
     /// <summary>
     ///  .NET Compiler Platform ("Roslyn")
     /// </summary>
-    internal class CSharpDynamicScript : IDynamicScript
+    internal class CSharpDynamicScriptEngine : IDynamicScriptEngine
     {
-        private CSharpDynamicScriptContext _context;
         private int _tenantId;
-        private string _projectName;
         private string _scriptHash;
-        private string path = string.Empty;
+        private string _projectName = Const.DefaultProjectName;
+        private string _path = Const.DefaultOutPutDllPath;
         private static object _lock = new object();
         private static AdvancedCache<string, Type> _scriptTypeDict = new AdvancedCache<string, Type>();
         private static AdvancedCache<string, List<MetadataReference>> _metadataReferences = new AdvancedCache<string, List<MetadataReference>>();
 
-        //CSharpDynamicScript(CSharpDynamicScriptContext context)
-        //{
-        //    _context = context;
-        //}
-
-        static CSharpDynamicScript()
+        static CSharpDynamicScriptEngine()
         {
             //监控项目路径
             AssemblyResolver.Instance.Init();
@@ -45,67 +38,54 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             CSharpReferenceManager.InitMetadataReferences(_metadataReferences);
         }
 
-        //public object RunDynamicScript(int businessCode, int tenantId, string applicationName, DynamicScriptAction action,
-        //    string type = null, string keyName = null, string keyCode = null, ScriptRange scriptRange = ScriptRange.SysAndCustom,
-        //    string functionName = null, params object[] parameters)
-        //{
-        //    return RunDynamicScriptList(businessCode, tenantId, applicationName, action, type, keyName, keyCode, scriptRange, functionName, parameters);
-        //}
-
-        //private object RunDynamicScriptList(int businessCode, int tenantId, string applicationName, DynamicScriptAction action,
-        //                                    string type, string keyName, string keyCode, ScriptRange scriptRange, string functionName = null, params object[] parameters)
-        //{
-        //    //ArgumentHelper.AssertPositive(businessCode, "BusinessCode must greater than 0");
-        //    //ArgumentHelper.AssertPositive(tenantId, "TenantID must greater than 0");
-        //    //ArgumentHelper.AssertNotEmpty(applicationName, "ApplicationName is null or empty");
-        //    //ArgumentHelper.AssertIsTrue(!(type == null && keyName == null && keyCode == null), "type、keyname、keyCode at least one can't be empty");
-        //    //AssertBusinessCode(businessCode);
-
-        //    var dynamicScripts = DynamicScriptAccessorProvider.Instance.GetDynamicScriptForRun(businessCode, tenantId, applicationName, action, type, keyName, keyCode, scriptRange);
-        //    var scriptKey = ConcatScriptKey(String.Join("|", dynamicScripts.Select(o => o.ObjectID)), businessCode, tenantId, applicationName, action, type, keyName, keyCode);
-        //    return RunningDynamicScript(scriptKey, dynamicScripts, functionName, parameters);
-        //}
-
-        //这只是一个Test，回头重构掉
-        public Result<T> Run<T>(DynamicScript dynamicScript, string functionName, params object[] parameters)
+        private void ArgumentCheckSet(DynamicScript dynamicScript)
         {
             _tenantId = dynamicScript.TenantId;
-            _projectName = dynamicScript.ProjectName;
-            return RunningDynamicScript<T>(new List<DynamicScript> { dynamicScript }, functionName, parameters);
+            dynamicScript.Script.CheckNullOrEmpty("script can not be null");
+            dynamicScript.FunctionName.CheckNullOrEmpty("function name can not be null");
+            if (!string.IsNullOrEmpty(dynamicScript.ProjectName))
+                _projectName = dynamicScript.ProjectName;
         }
 
-
-        private Result<T> RunningDynamicScript<T>(List<DynamicScript> dynamicScripts, string functionName = null, params object[] parameters)
+        public Result<T> Run<T>(DynamicScript dynamicScript)
         {
+            ArgumentCheckSet(dynamicScript);
+            T scriptResult = default(T);
+            return RunningDynamicScript<T>(dynamicScript, ref scriptResult);
+        }
+
+        public Result<T> Run<T>(List<DynamicScript> dynamicScripts)
+        {
+            foreach (var item in dynamicScripts)
+                ArgumentCheckSet(item);
+
             T scriptResult = default(T);
             Result<T> runResult = Result<T>.Success();
             foreach (var script in dynamicScripts)
             {
-                runResult = RunningDynamicScript<T>(script, functionName, parameters, ref scriptResult);
+                runResult = RunningDynamicScript<T>(script, ref scriptResult);
                 if (!runResult.IsSuccess && script.OnFailureAction == OnFailureAction.Break)
-                {
                     break;
-                }
             }
             runResult.Data = scriptResult;
             return runResult;
         }
 
-        internal Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript, string functionName, object[] parameters, ref T scriptResult)
+        internal Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript, ref T scriptResult)
         {
             //var watch = new Stopwatch();
             //var beginTime = DateTime.Now;
             //watch.Restart();
-            var dynamicScriptResult = CreateInstance(dynamicScript);
-            if (!dynamicScriptResult.IsSuccess)
+            var dynamicScriptResult = BuildDynamicScript(dynamicScript.Script, out string errorMessage);
+            if (!dynamicScriptResult)
             {
                 //logger.Error(new ScriptCompileErrorException(JsonConvert.SerializeObject(dynamicScript)) + "|" + JsonConvert.SerializeObject(parameters));
-                return Result<T>.Error(dynamicScriptResult.Message);
+                return Result<T>.Error(errorMessage);
             }
 
             try
             {
-                scriptResult = CallFunction<T>(functionName, parameters);
+                scriptResult = CallFunction<T>(dynamicScript.FunctionName, dynamicScript.Parameters);
                 //watch.Stop();
                 //dynamicScriptResult.Dispose();
                 //AddScriptTrackerLog(dynamicScript, beginTime, watch.ElapsedMilliseconds);
@@ -114,7 +94,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             catch (Exception ex)
             {
                 //watch.Stop();
-                string errorMsg = ex.Message + ",innerEx:" + (ex.InnerException == null ? "" : ex.InnerException.Message);
+                string errorMsg = ex.Message + ",innerEx:" + ex.InnerException?.Message;
                 //string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", script.ObjectID, script.TenantId, script.ApplicationName, functionName, ex.Message);
                 //AddScriptTrackerLog(script, beginTime, watch.ElapsedMilliseconds, parameters, errorMsg);
                 //WriteErrMsgToContext(errorMsgContext);
@@ -123,30 +103,26 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
         }
 
-        private Result CreateInstance(DynamicScript dynamicScript)
+        private bool BuildDynamicScript(string dynamicScript, out string errorMessage)
         {
-            return BuildDynamicScript(dynamicScript);
-        }
-
-        private Result BuildDynamicScript(DynamicScript dynamicScript)
-        {
-            string script = GetScript(dynamicScript.Script);
+            //deal with script to runable script
+            string script = GetScriptForRun(dynamicScript);
+            //get script hash
             _scriptHash = GetScriptKeyHash(script);
-            if (!BuildingDynamicScript(script, out string errorMsg))
-            {
-                return Result.Error(errorMsg);
-            }
-            return Result.Success();
+            return BuildDynamicScriptAndCreateType(script, out errorMessage);
         }
 
-        private string GetScript(string script)
+        private string GetScriptForRun(string script)
         {
-            var tenantIdTag = "[_tenantId_]";
-            var codeTag = "[_code_]";
+            var commonUsingTag = "[_common_using_]";
+            var usingTag = "[_using_]";
             var namespacesTag = "[_namespaces_]";
+            var tenantIdTag = "[_tenantId_]";
+            var commonCodeTag = "[_common_code_]";
+            var codeTag = "[_code_]";
 
             string usingNameSpaces = string.Empty;
-            string code = string.Empty;
+            string code = script;
 
             if (script.Contains(Const.EndUsing))
             {
@@ -154,14 +130,13 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                 usingNameSpaces = scriptArray[0];
                 code = scriptArray[1];
             }
-            else
-            {
-                code = script;
-            }
 
             return Const.CsharpScriptTemplate
+                .Replace(commonUsingTag, Const.CSharpCommonUsing)
+                .Replace(usingTag, usingNameSpaces)
+                .Replace(namespacesTag, string.Empty)
                 .Replace(tenantIdTag, _tenantId.ToString())
-                .Replace(namespacesTag, usingNameSpaces)
+                .Replace(commonCodeTag, Const.CSharpCommonCode)
                 .Replace(codeTag, code)
                 .ClearScript()
                 .RemoveEmptyLines();
@@ -169,10 +144,10 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
 
         private string GetScriptKeyHash(string script)
         {
-            return String.Format(Const.AssemblyScriptKey, DynamicScriptLanguage.CSharp, _tenantId, _projectName, MD5Helper.GetMd5Hash(script), "");
+            return String.Format(Const.AssemblyScriptKey, DynamicScriptLanguage.CSharp, _tenantId, _projectName, MD5Helper.GetMd5Hash(script));
         }
 
-        private bool BuildingDynamicScript(string script, out string errorMsg)
+        private bool BuildDynamicScriptAndCreateType(string script, out string errorMsg)
         {
             string typeName = String.Format(Const.MethodTypeName, _tenantId);
             errorMsg = string.Empty;
@@ -180,7 +155,6 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             {
                 if (_scriptTypeDict.ContainsKey(_scriptHash))
                 {
-                    //SetContextDataRepository(_scriptTypeDict[_scriptHash]);
                     return true;
                 }
 
@@ -195,8 +169,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                         if (!_scriptTypeDict.ContainsKey(_scriptHash))
                         {
                             var type = asm.GetType(typeName);
-                            _scriptTypeDict.Insert(_scriptHash, type, ValueTranslator.TrueFalse(ScriptEngine_SettingsConfig.Instance.Config.IsCachePermanent) ? CacheStrategy.Permanent : CacheStrategy.Temporary);
-                            //SetContextDataRepository(type);
+                            _scriptTypeDict.Insert(_scriptHash, type, CacheStrategy.Permanent);
                         }
                         return true;
                     }
@@ -210,19 +183,25 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
         }
 
+        #region Create Assembly and output files
+        /// <summary>
+        /// Create Assembly whick will run
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="errorMsg"></param>
+        /// <returns></returns>
         private Assembly CreateAsmExecutor(string script, out string errorMsg)
         {
-
             errorMsg = null;
             var assemblyName = _scriptHash;
 
             var sourceTree = CSharpSyntaxTree.ParseText(script, path: assemblyName + ".cs", encoding: Encoding.UTF8);
 
-            var references = _metadataReferences[AppSettingsConfig.Instance.Config.SevenTinyCloud.AppName];
+            var references = _metadataReferences[AppSettingsConfigHelper.GetAppName()];
 
             var compilation = CSharpCompilation.Create(assemblyName,
                 new[] { sourceTree }, references,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(ValueTranslator.TrueFalse(ScriptEngine_SettingsConfig.Instance.Config.IsDebug) ? OptimizationLevel.Debug : OptimizationLevel.Release));
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(ValueTranslator.TrueFalse(SettingsConfig.Instance.Config.IsDebug) ? OptimizationLevel.Debug : OptimizationLevel.Release));
 
             Assembly assembly;
             using (var assemblyStream = new MemoryStream())
@@ -236,10 +215,14 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                         var assemblyBytes = assemblyStream.GetBuffer();
                         var pdbBytes = pdbStream.GetBuffer();
                         assembly = Assembly.Load(assemblyBytes, pdbBytes);
-                        if (ValueTranslator.TrueFalse(ScriptEngine_SettingsConfig.Instance.Config.IsOutPutAllFiles))
-                            OutputDynamicScriptAllFile(script, assemblyName, assemblyBytes, pdbBytes);
-                        else
-                            OutputDynamicScriptDllFile(assemblyName, assemblyBytes);
+                        //output files
+                        if (SettingsConfigHelper.IsOutPutFiles())
+                        {
+                            if (SettingsConfigHelper.IsOutPutAllFiles())
+                                OutputDynamicScriptAllFile(script, assemblyName, assemblyBytes, pdbBytes);
+                            else
+                                OutputDynamicScriptDllFile(assemblyName, assemblyBytes);
+                        }
                     }
                     else
                     {
@@ -247,8 +230,8 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                         foreach (var msg in emitResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => string.Format("[{0}]:{1}({2})", d.Id, d.GetMessage(), d.Location.GetLineSpan().StartLinePosition)))
                         {
                             msgs.AppendLine(msg);
-                            //if (IsOutputDynamicScriptFile())
-                            //    WriteDynamicScriptCs(Path.Combine(EnsureOutputPath(true), assemblyName + ".cs"), script);
+                            if (SettingsConfigHelper.IsOutPutFiles())
+                                WriteDynamicScriptCs(Path.Combine(EnsureOutputPath(), assemblyName + ".cs"), script);
                             //_logger.Error(new CompileErrorException(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, msg, Language, _applicationName, _scriptHash)));
                         }
                         errorMsg = msgs.ToString();
@@ -262,16 +245,21 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
 
         private void OutputDynamicScriptDllFile(string assemblyName, byte[] assemblyBytes)
         {
-            //string path = EnsureOutputPath(true);
+            string path = EnsureOutputPath();
             WriteDynamicScriptFile(Path.Combine(path, assemblyName + ".dll"), assemblyBytes);
         }
-
         private void OutputDynamicScriptAllFile(string script, string assemblyName, byte[] assemblyBytes, byte[] pdbBytes)
         {
-            //string path = EnsureOutputPath(true);
+            string path = EnsureOutputPath();
             WriteDynamicScriptFile(Path.Combine(path, assemblyName + ".dll"), assemblyBytes);
             WriteDynamicScriptFile(Path.Combine(path, assemblyName + ".pdb"), pdbBytes);
             WriteDynamicScriptCs(Path.Combine(path, assemblyName + ".cs"), script);
+        }
+        private string EnsureOutputPath()
+        {
+            if (!Directory.Exists(_path))
+                Directory.CreateDirectory(_path);
+            return _path;
         }
         private void WriteDynamicScriptFile(string filePathName, byte[] bytes)
         {
@@ -297,17 +285,8 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                 //_logger.Error(ex);
             }
         }
+        #endregion
 
-        private T CallFunction<T>(string functionName, params object[] parameters)
-        {
-            ArgumentChecker.NotNullOrEmpty(functionName, nameof(functionName));
-            if (_scriptHash != null && _scriptTypeDict.ContainsKey(_scriptHash))
-            {
-                var type = _scriptTypeDict[_scriptHash];
-                return ExecuteTrustedCode<T>(type, functionName, parameters);
-            }
-            return default(T);
-        }
         private T ExecuteTrustedCode<T>(Type type, string functionName, object[] parameters)
         {
             var obj = Activator.CreateInstance(type);
@@ -324,6 +303,33 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                 //             _tenantId, functionName, Language, _applicationName, _scriptHash, parameters.Length, missingMethod.Message)));
                 return default(T);
             }
+        }
+        /// <summary>
+        /// Call script function
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="functionName">name of function</param>
+        /// <param name="parameters">parameters of function</param>
+        /// <returns></returns>
+        private T CallFunction<T>(string functionName, params object[] parameters)
+        {
+            ArgumentChecker.NotNullOrEmpty(functionName, nameof(functionName));
+            if (!string.IsNullOrEmpty(_scriptHash) && _scriptTypeDict.ContainsKey(_scriptHash))
+            {
+                var type = _scriptTypeDict[_scriptHash];
+                //Note:.NET Core 3.0 Preview 5 start support
+                //暂时不支持沙箱环境
+                //if (SettingsConfig.Instance.SandboxEnable)
+                //{
+                //    object obj = null;
+                //    var sandBoxer = new SandBoxer();
+                //    obj = sandBoxer.ExecuteUntrustedCode(type, functionName, 0, parameters);
+                //    sandBoxer.UnloadSandBoxer();
+                //    return (T)obj;
+                //}
+                return ExecuteTrustedCode<T>(type, functionName, parameters);
+            }
+            return default(T);
         }
     }
 }

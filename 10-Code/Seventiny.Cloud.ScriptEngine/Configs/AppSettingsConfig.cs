@@ -17,15 +17,23 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         public SevenTinyCloud SevenTinyCloud { get; set; }
     }
 
-    public class SevenTinyCloud
+    internal class SevenTinyCloud
     {
         [JsonProperty]
         public string AppName { get; set; }
     }
 
-    public class ConnectionStrings
+    internal class ConnectionStrings
     {
         [JsonProperty]
         public string SevenTinyConfig { get; set; }
+    }
+
+    internal static class AppSettingsConfigHelper
+    {
+        public static string GetAppName()
+        {
+            return AppSettingsConfig.Instance?.Config?.SevenTinyCloud?.AppName ?? "SevenTinyCloud";
+        }
     }
 }

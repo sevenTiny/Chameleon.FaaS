@@ -11,8 +11,8 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
     {
         public static void InitMetadataReferences(AdvancedCache<string, List<MetadataReference>> metadataReferences)
         {
-            if (!metadataReferences.ContainsKey(AppSettingsConfig.Instance.Config.SevenTinyCloud.AppName))
-                metadataReferences.Insert(AppSettingsConfig.Instance.Config.SevenTinyCloud.AppName, new List<MetadataReference>(), ValueTranslator.TrueFalse(ScriptEngine_SettingsConfig.Instance.Config.IsCachePermanent) ? CacheStrategy.Permanent : CacheStrategy.Temporary);
+            if (!metadataReferences.ContainsKey(AppSettingsConfigHelper.GetAppName()))
+                metadataReferences.Insert(AppSettingsConfigHelper.GetAppName(), new List<MetadataReference>(), CacheStrategy.Permanent);
 
             ReferenceNecessaryAssembly(metadataReferences);
             ReferenceSystemAssembly(metadataReferences);
@@ -36,9 +36,13 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(System.Runtime.Serialization.DataContractSerializer).Assembly.Location),
             };
-            metadataReferences[AppSettingsConfig.Instance.Config.SevenTinyCloud.AppName].AddRange(references);
+            metadataReferences[AppSettingsConfigHelper.GetAppName()].AddRange(references);
         }
 
+        /// <summary>
+        /// 公共引用包，在配置文件中配置引用key=System
+        /// </summary>
+        /// <param name="metadataReferences"></param>
         private static void ReferenceSystemAssembly(AdvancedCache<string, List<MetadataReference>> metadataReferences)
         {
             ReferenceAssemblyByAppName(metadataReferences, Const.ScriptEngine_AssemblyReferenceConfig_SystemAssemblyKey);
@@ -46,18 +50,31 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
 
         private static void ReferenceExternalAssembly(AdvancedCache<string, List<MetadataReference>> metadataReferences)
         {
-            ReferenceAssemblyByAppName(metadataReferences, AppSettingsConfig.Instance.Config.SevenTinyCloud.AppName);
+            ReferenceAssemblyByAppName(metadataReferences, AppSettingsConfigHelper.GetAppName());
         }
 
+        /// <summary>
+        /// 引用第三方包，配置文件中配置引用key=对应服务的应用名
+        /// </summary>
+        /// <param name="metadataReferences"></param>
+        /// <param name="appName"></param>
         private static void ReferenceAssemblyByAppName(AdvancedCache<string, List<MetadataReference>> metadataReferences, string appName)
         {
-            var systemAssemblyNames = ScriptEngine_AssemblyReferenceConfig.GetByAppName(appName);
+            var systemAssemblyNames = AssemblyReferenceConfig.GetByAppName(appName);
             if (systemAssemblyNames != null && systemAssemblyNames.Any())
             {
-                var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+                var assemblyPath = Path.GetDirectoryName(Const.ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName);
                 foreach (var assemblyName in systemAssemblyNames)
                 {
-                    metadataReferences[AppSettingsConfig.Instance.Config.SevenTinyCloud.AppName].Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath, assemblyName + ".dll")));
+                    if (!Directory.Exists(assemblyName))
+                        throw new DirectoryNotFoundException($"directory [{assemblyPath}] not found.");
+
+                    string filePath = Path.Combine(assemblyPath, assemblyName + ".dll");
+
+                    if (!File.Exists(filePath))
+                        throw new FileNotFoundException($"reference file [{filePath}] in config not found in directory");
+
+                    metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(filePath));
                 }
             }
         }

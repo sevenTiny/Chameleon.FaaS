@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Seventiny.Cloud.ScriptEngine.Toolkit
+﻿namespace Seventiny.Cloud.ScriptEngine.Toolkit
 {
     internal class Const
     {
+        public const string DefaultOutPutDllPath = "SeventinyScriptEngine";
+        public const string DefaultProjectName = "SevenTinyCloud";
+
         //reference lib
         public const string RefMscorlib = "mscorlib.dll";
         public const string RefSystem = "System.dll";
@@ -14,6 +13,7 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
         public const string RefCollections = "System.Collections.dll";
 
         public const string ScriptEngine_AssemblyReferenceConfig_SystemAssemblyKey = "System";
+        public const string ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName = "SeventinyCloudReferences";
 
         //Template
         public const string EndUsing = "//EndUsing";
@@ -36,20 +36,29 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
         public const string OperationContract = "OperationContract";
 
         public const string MethodTypeName = "CSharpScriptEngine{0}.DynamicScriptExecutor";
-        public const string AssemblyScriptKey = "GeneratedAssembly_{0}_{1}_{2}_{3}_{4}";
+        public const string AssemblyScriptKey = "GeneratedAssembly_{0}_{1}_{2}_{3}";
 
-
+        public const string CSharpCommonUsing =
+@"";
+        public const string CSharpCommonCode =
+@"";
+        /// <summary>
+        /// C# code template
+        /// </summary>
         public const string CsharpScriptTemplate =
-           @"
+@"
 using System;
 using System.Collections;
 using System.Collections.Generic;
+[_common_using_]
+[_using_]
 
 [_namespaces_]
 namespace CSharpScriptEngine[_tenantId_]
 {
     public class DynamicScriptExecutor
     {
+        [_common_code_]
         [_code_]
     }
 }";

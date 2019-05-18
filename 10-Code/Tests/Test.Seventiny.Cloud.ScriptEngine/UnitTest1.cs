@@ -12,7 +12,7 @@ namespace Test.Seventiny.Cloud.ScriptEngine
             ScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
 
             DynamicScript script = new DynamicScript();
-            script.TenantId = 10000;
+            script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
             script.OnFailureAction = OnFailureAction.Continue;
             script.ProjectName = "TestApp";
@@ -27,12 +27,16 @@ public int GetA(int a)
     return a;
 }
 ";
-            for (int i = 0; i < 10; i++)
+            script.FunctionName = "GetA";
+            script.Parameters = new object[] { 111 };
+
+            for (int i = 0; i < 1000; i++)
             {
-                var result = scriptEngineProvider.RunScript<int>(script, "GetA", 111);
+                var result = scriptEngineProvider.RunScript<int>(script);
+                Assert.Equal(111, result.Data);
             }
 
-            script.Script=
+            script.Script =
                 @"
 using System;
 
@@ -43,10 +47,13 @@ public int GetB(int a)
     return a;
 }
 ";
+            script.FunctionName = "GetB";
+            script.Parameters = new object[] { 99999999 };
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                var result = scriptEngineProvider.RunScript<int>(script, "GetB", 99999999);
+                var result = scriptEngineProvider.RunScript<int>(script);
+                Assert.Equal(99999999, result.Data);
             }
         }
     }
