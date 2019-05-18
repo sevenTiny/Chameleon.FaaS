@@ -2,7 +2,7 @@
 
 namespace Seventiny.Cloud.ScriptEngine.Toolkit
 {
-    public static class ScriptExtension
+    internal static class ScriptExtension
     {
         private static string emptyLinePattern = @"^\s*$\n|\r";
         private static string commentPattern = @"(@(?:""[^""]*"")+|""(?:[^""\n\\]+|\\.)*""|'(?:[^'\n\\]+|\\.)*')|//.*|/\*(?s:.*?)\*/";
