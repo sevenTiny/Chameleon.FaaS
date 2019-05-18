@@ -71,7 +71,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             return runResult;
         }
 
-        internal Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript, ref T scriptResult)
+        private Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript, ref T scriptResult)
         {
             //var watch = new Stopwatch();
             //var beginTime = DateTime.Now;

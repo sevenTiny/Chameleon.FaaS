@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace Seventiny.Cloud.ScriptEngine.Toolkit
 {
@@ -23,13 +22,7 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
 
         private AssemblyResolver()
         {
-            var baseLibPath = AppDomain.CurrentDomain.BaseDirectory;
-            //var baseLibPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.SetupInformation.PrivateBinPath ?? "");
-            //string appName = ConfigurationManager.AppSettings[DynamicScriptConst.AppName];
-            //string cloudAppName = ConfigurationManager.AppSettings[DynamicScriptConst.CloudAppName];
-            //var appLibPath = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath,
-            //    string.IsNullOrEmpty(cloudAppName) ? DynamicScriptConst.Common : cloudAppName,
-            //    string.IsNullOrEmpty(appName) ? "" : appName);
+            var baseLibPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Const.DefaultOutPutDllPath);
 
             _searchPaths.Add(baseLibPath);
             //_searchPaths.Add(appLibPath);
@@ -64,24 +57,6 @@ namespace Seventiny.Cloud.ScriptEngine.Toolkit
         {
             return _hasInit;
         }
-
-        //public void AddAppPath(string applicationName)
-        //{
-        //    string path = Path.Combine(DynamicScriptEngineSettings.Instance.AppLibPath, applicationName);
-        //    if (!_searchPaths.Contains(path))
-        //    {
-        //        _searchPaths.Add(path);
-        //    }
-        //}
-
-        //public void AddTanantPath(int tenantId)
-        //{
-        //    string path = Path.Combine(DynamicScriptEngineSettings.Instance.TenantLibPath, tenantId.ToString());
-        //    if (!_searchPaths.Contains(path))
-        //    {
-        //        _searchPaths.Add(path);
-        //    }
-        //}
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
