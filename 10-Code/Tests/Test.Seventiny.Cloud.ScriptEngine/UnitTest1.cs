@@ -30,10 +30,9 @@ public int GetA(int a)
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 var result = scriptEngineProvider.RunScript<int>(script);
-                Assert.Equal(111, result.Data);
             }
 
             script.Script =
@@ -50,10 +49,9 @@ public int GetB(int a)
             script.FunctionName = "GetB";
             script.Parameters = new object[] { 99999999 };
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 var result = scriptEngineProvider.RunScript<int>(script);
-                Assert.Equal(99999999, result.Data);
             }
         }
     }

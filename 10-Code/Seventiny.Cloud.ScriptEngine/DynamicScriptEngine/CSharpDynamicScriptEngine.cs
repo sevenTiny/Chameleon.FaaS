@@ -201,7 +201,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
 
             var compilation = CSharpCompilation.Create(assemblyName,
                 new[] { sourceTree }, references,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(ValueTranslator.TrueFalse(SettingsConfig.Instance.Config.IsDebug) ? OptimizationLevel.Debug : OptimizationLevel.Release));
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(SettingsConfigHelper.IsDebug() ? OptimizationLevel.Debug : OptimizationLevel.Release));
 
             Assembly assembly;
             using (var assemblyStream = new MemoryStream())
