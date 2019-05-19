@@ -29,15 +29,15 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
     {
         public static bool IsDebug()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance.Config.IsDebug);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.Config?.IsDebug ?? 0);
         }
         public static bool IsOutPutFiles()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance.Config.IsOutPutFiles);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.Config?.IsOutPutFiles ?? 1);
         }
         public static bool IsOutPutAllFiles()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance.Config.IsOutPutAllFiles);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.Config?.IsOutPutAllFiles ?? 1);
         }
         public static bool IsCachePermanent()
         {
@@ -49,7 +49,7 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         /// <returns></returns>
         public static bool IsStandAloneDeployMode()
         {
-            return SettingsConfig.Instance.Config.DeployMode?.Equals("StandAlone") ?? true;
+            return SettingsConfig.Instance?.Config?.DeployMode?.Equals("StandAlone") ?? true;
         }
     }
 }
