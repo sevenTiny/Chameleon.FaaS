@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ScriptManager\**" />
+    <EmbeddedResource Remove="ScriptManager\**" />
+    <None Remove="ScriptManager\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fasterflect.Netstandard" Version="1.0.9" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.0.0" />
+    <PackageReference Include="SevenTiny.Bantina" Version="1.0.15" />
+    <PackageReference Include="SevenTiny.Bantina.Configuration.Json" Version="1.0.4" />
+    <PackageReference Include="SevenTiny.Bantina.Configuration.MySql" Version="1.0.10" />
+  </ItemGroup>
+
+</Project>
