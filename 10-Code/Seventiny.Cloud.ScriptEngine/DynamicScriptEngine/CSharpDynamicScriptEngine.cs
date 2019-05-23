@@ -24,8 +24,8 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
     {
         private int _tenantId;
         private string _scriptHash;
-        private string _projectName = Const.DefaultProjectName;
-        private string _path = Const.DefaultOutPutDllPath;
+        private string _projectName;
+        private string _path;
         private static object _lock = new object();
         private static AdvancedCache<string, Type> _scriptTypeDict = new AdvancedCache<string, Type>();
         private static AdvancedCache<string, List<MetadataReference>> _metadataReferences = new AdvancedCache<string, List<MetadataReference>>();
@@ -36,6 +36,12 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             AssemblyResolver.Instance.Init();
             //初始化引用
             CSharpReferenceManager.InitMetadataReferences(_metadataReferences);
+        }
+
+        public CSharpDynamicScriptEngine()
+        {
+            _projectName = Const.DefaultProjectName;
+            _path = Const.DefaultOutPutDllPath;
         }
 
         private void ArgumentCheckSet(DynamicScript dynamicScript)

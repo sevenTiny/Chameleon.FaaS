@@ -61,7 +61,7 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
         private static void ReferenceAssemblyByAppName(AdvancedCache<string, List<MetadataReference>> metadataReferences, string appName)
         {
             //如果没有第三方引用目录，则创建一个
-            var assemblyPath = Path.GetDirectoryName(Const.ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName);
+            var assemblyPath = Const.ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName;
             if (!Directory.Exists(assemblyPath))
                 Directory.CreateDirectory(assemblyPath);
 
