@@ -60,21 +60,10 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             return RunningDynamicScript<T>(dynamicScript, ref scriptResult);
         }
 
-        public Result<T> Run<T>(List<DynamicScript> dynamicScripts)
+        public Result CheckScript(DynamicScript dynamicScript)
         {
-            foreach (var item in dynamicScripts)
-                ArgumentCheckSet(item);
-
-            T scriptResult = default(T);
-            Result<T> runResult = Result<T>.Success();
-            foreach (var script in dynamicScripts)
-            {
-                runResult = RunningDynamicScript<T>(script, ref scriptResult);
-                if (!runResult.IsSuccess && script.OnFailureAction == OnFailureAction.Break)
-                    break;
-            }
-            runResult.Data = scriptResult;
-            return runResult;
+            ArgumentCheckSet(dynamicScript);
+            return BuildDynamicScript(dynamicScript.Script, out string errorMsg) ? Result.Success() : Result.Error(errorMsg);
         }
 
         private Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript, ref T scriptResult)

@@ -9,12 +9,11 @@ namespace Test.Seventiny.Cloud.ScriptEngine
         [Fact]
         public void Test1()
         {
-            ScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
+            IScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
-            script.OnFailureAction = OnFailureAction.Continue;
             script.ProjectName = "TestApp";
             script.Script =
 @"
@@ -53,6 +52,33 @@ public int GetB(int a)
             {
                 var result = scriptEngineProvider.RunScript<int>(script);
             }
+        }
+
+        [Fact]
+        public void CheckScript()
+        {
+            IScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
+            DynamicScript script = new DynamicScript();
+            script.TenantId = 0;
+            script.Language = DynamicScriptLanguage.CSharp;
+            script.ProjectName = "TestApp";
+            script.Script =
+@"
+using System;
+
+//EndUsing
+
+public int GetA(int a)
+{
+    return a;int 
+}
+";
+            script.FunctionName = "GetA";
+            script.Parameters = new object[] { 111 };
+
+            var result = scriptEngineProvider.CheckScript(script);
+
+            Assert.False(result.IsSuccess);
         }
     }
 }

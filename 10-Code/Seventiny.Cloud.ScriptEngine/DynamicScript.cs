@@ -29,9 +29,5 @@
         /// 脚本语言
         /// </summary>
         public DynamicScriptLanguage Language { get; set; }
-        /// <summary>
-        /// 执行失败时的处理策略
-        /// </summary>
-        public OnFailureAction OnFailureAction { get; set; }
     }
 }
