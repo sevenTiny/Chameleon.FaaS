@@ -24,6 +24,7 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var references = new[]
             {
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefNetStandard)),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefMscorlib)),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefSystem)),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefSystemCore)),

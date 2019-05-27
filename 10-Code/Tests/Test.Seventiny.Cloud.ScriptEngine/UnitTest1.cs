@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Seventiny.Cloud.ScriptEngine;
 using System;
 using Xunit;
@@ -79,6 +80,34 @@ public int GetA(int a)
             var result = scriptEngineProvider.CheckScript(script);
 
             Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void Reference()
+        {
+            IScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
+            DynamicScript script = new DynamicScript();
+            script.TenantId = 0;
+            script.Language = DynamicScriptLanguage.CSharp;
+            script.ProjectName = "TestApp";
+            script.Script =
+@"
+using System;
+using Newtonsoft.Json;
+
+//EndUsing
+
+public string GetA(int a)
+{
+    var b = JsonConvert.SerializeObject(a);
+    return b;
+}
+";
+            script.FunctionName = "GetA";
+            script.Parameters = new object[] { 111 };
+            var type = typeof(JsonConvert);
+            var ss = type.Assembly;
+            var result = scriptEngineProvider.CheckScript(script);
         }
     }
 }
