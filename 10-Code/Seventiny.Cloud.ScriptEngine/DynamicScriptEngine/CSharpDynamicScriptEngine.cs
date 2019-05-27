@@ -1,10 +1,12 @@
 ﻿using Fasterflect;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Newtonsoft.Json;
 using Seventiny.Cloud.ScriptEngine.Configs;
 using Seventiny.Cloud.ScriptEngine.RefrenceManager;
 using Seventiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina;
+using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
 using SevenTiny.Bantina.Validation;
 using System;
@@ -29,6 +31,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
         private static object _lock = new object();
         private static AdvancedCache<string, Type> _scriptTypeDict = new AdvancedCache<string, Type>();
         private static AdvancedCache<string, List<MetadataReference>> _metadataReferences = new AdvancedCache<string, List<MetadataReference>>();
+        private readonly ILog logger = new LogManager();
 
         static CSharpDynamicScriptEngine()
         {
@@ -74,7 +77,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             var dynamicScriptResult = BuildDynamicScript(dynamicScript.Script, out string errorMessage);
             if (!dynamicScriptResult)
             {
-                //logger.Error(new ScriptCompileErrorException(JsonConvert.SerializeObject(dynamicScript)) + "|" + JsonConvert.SerializeObject(parameters));
+                logger.Error(JsonConvert.SerializeObject(dynamicScript) + "|" + JsonConvert.SerializeObject(dynamicScript.Parameters));
                 return Result<T>.Error(errorMessage);
             }
 
@@ -90,10 +93,10 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             {
                 //watch.Stop();
                 string errorMsg = ex.Message + ",innerEx:" + ex.InnerException?.Message;
-                //string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", script.ObjectID, script.TenantId, script.ApplicationName, functionName, ex.Message);
+                string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, dynamicScript.ProjectName, dynamicScript.FunctionName, ex.Message);
                 //AddScriptTrackerLog(script, beginTime, watch.ElapsedMilliseconds, parameters, errorMsg);
                 //WriteErrMsgToContext(errorMsgContext);
-                //WriteErrToLog(errorMsg, ex);
+                logger.Error(errorMsgContext, ex);
                 return Result<T>.Error(errorMsg);
             }
         }
@@ -173,7 +176,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (Exception ex)
             {
-                //_logger.Error(ex);
+                logger.Error(ex);
                 return false;
             }
         }
@@ -227,14 +230,14 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                             msgs.AppendLine(msg);
                             if (SettingsConfigHelper.IsOutPutFiles())
                                 WriteDynamicScriptCs(Path.Combine(EnsureOutputPath(), assemblyName + ".cs"), script);
-                            //_logger.Error(new CompileErrorException(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, msg, Language, _applicationName, _scriptHash)));
+                            logger.Error(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, "CSharp", _projectName, msg, _scriptHash));
                         }
                         errorMsg = msgs.ToString();
                         return null;
                     }
                 }
             }
-            //_logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{Language}, {_applicationName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict.Count}  _metadataReferences:{ _metadataReferences[CloudAppName].Count}");
+            logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict.Count}  _metadataReferences:{ _metadataReferences[_projectName].Count}");
             return assembly;
         }
 
@@ -265,7 +268,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (Exception ex)
             {
-                //_logger.Error(ex);
+                logger.Error(ex);
             }
         }
         private void WriteDynamicScriptCs(string filePathName, string script)
@@ -277,7 +280,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (Exception ex)
             {
-                //_logger.Error(ex);
+                logger.Error(ex);
             }
         }
         #endregion
@@ -292,10 +295,10 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (MissingMethodException missingMethod)
             {
-                //_logger.Error(
-                //    new ScriptFunctionNotFoundException(
-                //        String.Format("TenantId:{0},FunctionName:{1},Language:{2},AppName:{3},ScriptHash:{4},ParameterCount:{5},ErrorMsg: {6}",
-                //             _tenantId, functionName, Language, _applicationName, _scriptHash, parameters.Length, missingMethod.Message)));
+                logger.Error(
+                    new MissingMethodException(
+                        String.Format("TenantId:{0},FunctionName:{1},Language:{2},AppName:{3},ScriptHash:{4},ParameterCount:{5},ErrorMsg: {6}",
+                             _tenantId, functionName, "CSharp", _projectName, _scriptHash, parameters.Length, missingMethod.Message)));
                 return default(T);
             }
         }
