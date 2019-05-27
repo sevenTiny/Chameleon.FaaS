@@ -5,14 +5,6 @@
         public const string DefaultOutPutDllPath = "SeventinyScriptEngine";
         public const string DefaultProjectName = "SevenTinyCloud";
 
-        //reference lib
-        public const string RefMscorlib = "mscorlib.dll";
-        public const string RefSystem = "System.dll";
-        public const string RefSystemCore = "System.Core.dll";
-        public const string RefMicrosoftCSharp = "Microsoft.CSharp.dll";
-        public const string RefCollections = "System.Collections.dll";
-        public const string RefNetStandard = "netstandard.dll";
-
         public const string ScriptEngine_AssemblyReferenceConfig_SystemAssemblyKey = "System";
         public const string ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName = "SeventinyCloudReferences";
 

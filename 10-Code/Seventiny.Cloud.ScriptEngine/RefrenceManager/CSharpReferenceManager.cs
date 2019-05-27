@@ -24,12 +24,14 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var references = new[]
             {
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefNetStandard)),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefMscorlib)),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefSystem)),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefSystemCore)),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefMicrosoftCSharp)),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, Const.RefCollections)),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "netstandard.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "Microsoft.CSharp.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Collections.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.dll")),
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(System.Xml.XmlReader).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(System.Net.HttpWebRequest).Assembly.Location),
