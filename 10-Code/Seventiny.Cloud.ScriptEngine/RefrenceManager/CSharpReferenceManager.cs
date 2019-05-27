@@ -60,21 +60,16 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
         /// <param name="appName"></param>
         private static void ReferenceAssemblyByAppName(AdvancedCache<string, List<MetadataReference>> metadataReferences, string appName)
         {
-            //如果没有第三方引用目录，则创建一个
-            var assemblyPath = Const.ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName;
-            if (!Directory.Exists(assemblyPath))
-                Directory.CreateDirectory(assemblyPath);
-
+            //这里配置的程序集引用要写文件全名，包括路径和后缀
             var systemAssemblyNames = AssemblyReferenceConfig.GetByAppName(appName);
             if (systemAssemblyNames != null && systemAssemblyNames.Any())
             {
                 foreach (var assemblyName in systemAssemblyNames)
                 {
-                    string filePath = Path.Combine(assemblyPath, assemblyName + ".dll");
-                    if (!File.Exists(filePath))
-                        throw new FileNotFoundException($"reference file [{filePath}] in config not found in directory");
+                    if (!File.Exists(assemblyName))
+                        throw new FileNotFoundException($"reference file [{assemblyName}] in config not found in directory");
 
-                    metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(filePath));
+                    metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(assemblyName));
                 }
             }
         }
