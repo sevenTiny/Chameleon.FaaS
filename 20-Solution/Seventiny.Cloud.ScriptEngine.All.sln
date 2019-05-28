@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Seventiny.Cloud.ScriptEngin
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{3FB61CC9-D93D-4862-A444-EB3C05F44020}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Seventiny.Cloud.ScriptEngine", "..\10-Code\Tests\Test.Seventiny.Cloud.ScriptEngine\Test.Seventiny.Cloud.ScriptEngine.csproj", "{6DE30280-F375-43FC-87F7-0167347670DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Seventiny.Cloud.ScriptEngine", "..\10-Code\Tests\Test.Seventiny.Cloud.ScriptEngine\Test.Seventiny.Cloud.ScriptEngine.csproj", "{6DE30280-F375-43FC-87F7-0167347670DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
