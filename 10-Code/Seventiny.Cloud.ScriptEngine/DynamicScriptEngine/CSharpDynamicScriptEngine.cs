@@ -65,6 +65,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
 
         public Result CheckScript(DynamicScript dynamicScript)
         {
+            dynamicScript.FunctionName = "_Function";
             ArgumentCheckSet(dynamicScript);
             return BuildDynamicScript(dynamicScript.Script, out string errorMsg) ? Result.Success() : Result.Error(errorMsg);
         }
@@ -176,6 +177,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (Exception ex)
             {
+                errorMsg = ex.ToString();
                 logger.Error(ex);
                 return false;
             }
@@ -237,7 +239,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                     }
                 }
             }
-            logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict.Count}  _metadataReferences:{ _metadataReferences[_projectName].Count}");
+            logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict?.Count}  _metadataReferences:{ _metadataReferences[_projectName]?.Count}");
             return assembly;
         }
 
