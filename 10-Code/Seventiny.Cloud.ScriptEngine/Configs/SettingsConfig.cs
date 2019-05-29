@@ -23,6 +23,11 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         /// </summary>
         [ConfigProperty]
         public string DeployMode { get; set; }
+        /// <summary>
+        /// 引用路径，多个逗号分隔
+        /// </summary>
+        [ConfigProperty]
+        public string ReferenceDirs { get; set; }
     }
 
     internal static class SettingsConfigHelper
@@ -50,6 +55,14 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         public static bool IsStandAloneDeployMode()
         {
             return SettingsConfig.Instance?.Config?.DeployMode?.Equals("StandAlone") ?? true;
+        }
+        /// <summary>
+        /// 获取引用路径
+        /// </summary>
+        /// <returns></returns>
+        public static string[] GetReferenceDirs()
+        {
+            return SettingsConfig.Instance?.Config?.ReferenceDirs?.Split(',');
         }
     }
 }

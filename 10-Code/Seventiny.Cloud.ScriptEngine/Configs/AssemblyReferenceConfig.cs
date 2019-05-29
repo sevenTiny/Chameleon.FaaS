@@ -15,9 +15,15 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         [ConfigProperty]
         public string Assembly { get; set; }
 
-        public static List<string> GetByAppName(string appName)
+        public static List<AssemblyInfo> GetAssemblyInfoByAppName(string appName)
         {
-            return Instance.Config?.Where(t => t.AppName.Equals(appName)).Select(t => t.Assembly).ToList();
+            return Instance.Config?.Where(t => t.AppName.Equals(appName))?.Select(t => new AssemblyInfo { AppName = t.AppName, Assembly = t.Assembly})?.ToList();
         }
+    }
+
+    internal class AssemblyInfo
+    {
+        public string AppName { get; set; }
+        public string Assembly { get; set; }
     }
 }

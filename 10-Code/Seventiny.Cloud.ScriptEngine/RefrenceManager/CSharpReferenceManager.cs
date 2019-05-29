@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Seventiny.Cloud.ScriptEngine.Configs;
 using Seventiny.Cloud.ScriptEngine.Toolkit;
+using SevenTiny.Bantina.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +11,8 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
 {
     internal class CSharpReferenceManager
     {
+        private static readonly ILog logger = new LogManager();
+
         public static void InitMetadataReferences(AdvancedCache<string, List<MetadataReference>> metadataReferences)
         {
             if (!metadataReferences.ContainsKey(AppSettingsConfigHelper.GetAppName()))
@@ -64,15 +68,25 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
         private static void ReferenceAssemblyByAppName(AdvancedCache<string, List<MetadataReference>> metadataReferences, string appName)
         {
             //这里配置的程序集引用要写文件全名，包括路径和后缀
-            var systemAssemblyNames = AssemblyReferenceConfig.GetByAppName(appName);
-            if (systemAssemblyNames != null && systemAssemblyNames.Any())
+            var assemblyInfos = AssemblyReferenceConfig.GetAssemblyInfoByAppName(appName);
+            var dirs = SettingsConfigHelper.GetReferenceDirs();
+            if (assemblyInfos != null && assemblyInfos.Any())
             {
-                foreach (var assemblyName in systemAssemblyNames)
+                foreach (var assemblyInfo in assemblyInfos)
                 {
-                    if (!File.Exists(assemblyName))
-                        throw new FileNotFoundException($"reference file [{assemblyName}] in config not found in directory");
+                    if (dirs == null || !dirs.Any())
+                        dirs = new[] { AppContext.BaseDirectory };
 
-                    metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(assemblyName));
+                    foreach (var dir in dirs)
+                    {
+                        var fileFullPath = Path.Combine(dir, assemblyInfo.Assembly);
+                        if (!File.Exists(fileFullPath))
+                        {
+                            logger.Debug($"reference file [{fileFullPath}] in config not found.");
+                            continue;
+                        }
+                        metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(fileFullPath));
+                    }
                 }
             }
         }
