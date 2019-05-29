@@ -11,7 +11,7 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
 {
     internal class CSharpReferenceManager
     {
-        private static readonly ILog logger = new LogManager();
+        private static readonly ILog _logger = new LogManager();
 
         public static void InitMetadataReferences(AdvancedCache<string, List<MetadataReference>> metadataReferences)
         {
@@ -21,6 +21,9 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
             ReferenceNecessaryAssembly(metadataReferences);
             ReferenceSystemAssembly(metadataReferences);
             ReferenceExternalAssembly(metadataReferences);
+
+            var referenceArrayJson = Newtonsoft.Json.JsonConvert.SerializeObject(metadataReferences[AppSettingsConfigHelper.GetAppName()]?.Select(t => t.Display)?.ToArray());
+            _logger.Debug($"dll加载完毕,加载信息如下：{referenceArrayJson}");
         }
 
         private static void ReferenceNecessaryAssembly(AdvancedCache<string, List<MetadataReference>> metadataReferences)
@@ -82,7 +85,7 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
                         var fileFullPath = Path.Combine(dir, assemblyInfo.Assembly);
                         if (!File.Exists(fileFullPath))
                         {
-                            logger.Debug($"reference file [{fileFullPath}] in config not found.");
+                            _logger.Debug($"reference file [{fileFullPath}] in config not found.");
                             continue;
                         }
                         metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(fileFullPath));

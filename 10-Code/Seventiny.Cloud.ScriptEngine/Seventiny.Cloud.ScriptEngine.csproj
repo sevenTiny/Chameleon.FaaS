@@ -27,7 +27,7 @@
     <PackageReference Include="SevenTiny.Bantina" Version="1.0.15" />
     <PackageReference Include="SevenTiny.Bantina.Configuration.Json" Version="1.0.7" />
     <PackageReference Include="SevenTiny.Bantina.Configuration.MySql" Version="1.0.12" />
-    <PackageReference Include="SevenTiny.Bantina.Logging" Version="1.0.10" />
+    <PackageReference Include="SevenTiny.Bantina.Logging" Version="1.0.16" />
   </ItemGroup>
 
 </Project>

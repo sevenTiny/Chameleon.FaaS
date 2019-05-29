@@ -31,7 +31,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
         private static object _lock = new object();
         private static AdvancedCache<string, Type> _scriptTypeDict = new AdvancedCache<string, Type>();
         private static AdvancedCache<string, List<MetadataReference>> _metadataReferences = new AdvancedCache<string, List<MetadataReference>>();
-        private readonly ILog logger = new LogManager();
+        private readonly ILog _logger = new LogManager();
 
         static CSharpDynamicScriptEngine()
         {
@@ -78,7 +78,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             var dynamicScriptResult = BuildDynamicScript(dynamicScript.Script, out string errorMessage);
             if (!dynamicScriptResult)
             {
-                logger.Error(JsonConvert.SerializeObject(dynamicScript) + "|" + JsonConvert.SerializeObject(dynamicScript.Parameters));
+                _logger.Error(JsonConvert.SerializeObject(dynamicScript) + "|" + JsonConvert.SerializeObject(dynamicScript.Parameters));
                 return Result<T>.Error(errorMessage);
             }
 
@@ -97,7 +97,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                 string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, dynamicScript.ProjectName, dynamicScript.FunctionName, ex.Message);
                 //AddScriptTrackerLog(script, beginTime, watch.ElapsedMilliseconds, parameters, errorMsg);
                 //WriteErrMsgToContext(errorMsgContext);
-                logger.Error(errorMsgContext, ex);
+                _logger.Error(errorMsgContext, ex);
                 return Result<T>.Error(errorMsg);
             }
         }
@@ -178,7 +178,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             catch (Exception ex)
             {
                 errorMsg = ex.ToString();
-                logger.Error(ex);
+                _logger.Error(ex);
                 return false;
             }
         }
@@ -232,14 +232,14 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
                             msgs.AppendLine(msg);
                             if (SettingsConfigHelper.IsOutPutFiles())
                                 WriteDynamicScriptCs(Path.Combine(EnsureOutputPath(), assemblyName + ".cs"), script);
-                            logger.Error(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, "CSharp", _projectName, msg, _scriptHash));
+                            _logger.Error(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, "CSharp", _projectName, msg, _scriptHash));
                         }
                         errorMsg = msgs.ToString();
                         return null;
                     }
                 }
             }
-            logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict?.Count}  _metadataReferences:{ _metadataReferences[_projectName]?.Count}");
+            _logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict?.Count}  _metadataReferences:{ _metadataReferences[_projectName]?.Count}");
             return assembly;
         }
 
@@ -270,7 +270,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                _logger.Error(ex);
             }
         }
         private void WriteDynamicScriptCs(string filePathName, string script)
@@ -282,7 +282,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                _logger.Error(ex);
             }
         }
         #endregion
@@ -297,7 +297,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             }
             catch (MissingMethodException missingMethod)
             {
-                logger.Error(
+                _logger.Error(
                     new MissingMethodException(
                         String.Format("TenantId:{0},FunctionName:{1},Language:{2},AppName:{3},ScriptHash:{4},ParameterCount:{5},ErrorMsg: {6}",
                              _tenantId, functionName, "CSharp", _projectName, _scriptHash, parameters.Length, missingMethod.Message)));
