@@ -1,5 +1,7 @@
 ﻿using Seventiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina.Configuration;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Seventiny.Cloud.ScriptEngine.Configs
 {
@@ -60,9 +62,9 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         /// 获取引用路径
         /// </summary>
         /// <returns></returns>
-        public static string[] GetReferenceDirs()
+        public static List<string> GetReferenceDirs()
         {
-            return SettingsConfig.Instance?.Config?.ReferenceDirs?.Split(',');
+            return SettingsConfig.Instance?.Config?.ReferenceDirs?.Split(',').ToList();
         }
     }
 }

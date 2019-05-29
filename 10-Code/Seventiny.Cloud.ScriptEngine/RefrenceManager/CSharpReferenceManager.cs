@@ -72,14 +72,18 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
         {
             //这里配置的程序集引用要写文件全名，包括路径和后缀
             var assemblyInfos = AssemblyReferenceConfig.GetAssemblyInfoByAppName(appName);
+
+            //为不为空都把默认执行路径加上扫描
             var dirs = SettingsConfigHelper.GetReferenceDirs();
+            if (dirs == null || !dirs.Any())
+                dirs = new List<string>();
+
+            dirs.Insert(0, AppContext.BaseDirectory);
+
             if (assemblyInfos != null && assemblyInfos.Any())
             {
                 foreach (var assemblyInfo in assemblyInfos)
                 {
-                    if (dirs == null || !dirs.Any())
-                        dirs = new[] { AppContext.BaseDirectory };
-
                     foreach (var dir in dirs)
                     {
                         var fileFullPath = Path.Combine(dir, assemblyInfo.Assembly);
@@ -88,7 +92,9 @@ namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
                             _logger.Debug($"reference file [{fileFullPath}] in config not found.");
                             continue;
                         }
+                        //如果文件存在，则加载完成后跳过后续扫描
                         metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(fileFullPath));
+                        break;
                     }
                 }
             }
