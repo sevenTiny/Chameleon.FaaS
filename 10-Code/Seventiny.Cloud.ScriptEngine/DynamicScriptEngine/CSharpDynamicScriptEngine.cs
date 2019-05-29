@@ -44,7 +44,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
         public CSharpDynamicScriptEngine()
         {
             _projectName = Const.DefaultProjectName;
-            _path = Const.DefaultOutPutDllPath;
+            _path = Path.Combine(AppContext.BaseDirectory, Const.DefaultOutPutDllPath);
         }
 
         private void ArgumentCheckSet(DynamicScript dynamicScript)
