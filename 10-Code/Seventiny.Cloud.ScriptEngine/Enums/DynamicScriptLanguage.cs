@@ -9,6 +9,6 @@ namespace Seventiny.Cloud.ScriptEngine
     /// </summary>
     public enum DynamicScriptLanguage
     {
-        CSharp
+        CSharp = 1
     }
 }
