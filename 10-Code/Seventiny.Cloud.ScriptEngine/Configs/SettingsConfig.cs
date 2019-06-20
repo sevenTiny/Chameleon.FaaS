@@ -1,5 +1,6 @@
 ﻿using Seventiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,7 +62,12 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         /// <returns></returns>
         public static List<string> GetReferenceDirs()
         {
-            return SettingsConfig.Instance?.ReferenceDirs?.Split(',').ToList();
+            //默认当前用户.nuget目录，这个目录不需要配置
+            List<string> referenceDirs = new List<string>() { $"C:\\Users\\{Environment.UserName}\\.nuget\\packages" };
+            var configDirs = SettingsConfig.Instance?.Config?.ReferenceDirs?.Split(',').ToList();
+            if (configDirs != null && configDirs.Any())
+                referenceDirs.AddRange(configDirs);
+            return referenceDirs;
         }
     }
 }

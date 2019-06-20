@@ -59,8 +59,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
         public Result<T> Run<T>(DynamicScript dynamicScript)
         {
             ArgumentCheckSet(dynamicScript);
-            T scriptResult = default(T);
-            return RunningDynamicScript<T>(dynamicScript, ref scriptResult);
+            return RunningDynamicScript<T>(dynamicScript);
         }
 
         public Result CheckScript(DynamicScript dynamicScript)
@@ -70,7 +69,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             return BuildDynamicScript(dynamicScript.Script, out string errorMsg) ? Result.Success() : Result.Error(errorMsg);
         }
 
-        private Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript, ref T scriptResult)
+        private Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript)
         {
             //var watch = new Stopwatch();
             //var beginTime = DateTime.Now;
@@ -84,7 +83,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
 
             try
             {
-                scriptResult = CallFunction<T>(dynamicScript.FunctionName, dynamicScript.Parameters);
+                var scriptResult = CallFunction<T>(dynamicScript.FunctionName, dynamicScript.Parameters);
                 //watch.Stop();
                 //dynamicScriptResult.Dispose();
                 //AddScriptTrackerLog(dynamicScript, beginTime, watch.ElapsedMilliseconds);
@@ -292,7 +291,8 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             var obj = Activator.CreateInstance(type);
             try
             {
-                var result = obj.TryCallMethodWithValues(functionName, parameters);
+                var parms = type.GetMethod(functionName).GetParameters();
+                var result = obj.TryCallMethod(functionName, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
                 return (T)result;
             }
             catch (MissingMethodException missingMethod)
