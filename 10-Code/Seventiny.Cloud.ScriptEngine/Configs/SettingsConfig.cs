@@ -64,7 +64,7 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         {
             //默认当前用户.nuget目录，这个目录不需要配置
             List<string> referenceDirs = new List<string>() { $"C:\\Users\\{Environment.UserName}\\.nuget\\packages" };
-            var configDirs = SettingsConfig.Instance?.Config?.ReferenceDirs?.Split(',').ToList();
+            var configDirs = SettingsConfig.Instance?.ReferenceDirs?.Split(',').ToList();
             if (configDirs != null && configDirs.Any())
                 referenceDirs.AddRange(configDirs);
             return referenceDirs;
