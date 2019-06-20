@@ -8,9 +8,6 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
     [ConfigName("ScriptEngine_Settings")]
     internal class SettingsConfig : MySqlColumnConfigBase<SettingsConfig>
     {
-        public static SettingsConfig Instance = new SettingsConfig();
-        protected override string _ConnectionString => GetConnectionStringFromAppSettings("SevenTinyConfig");
-
         [ConfigProperty]
         public int IsDebug { get; set; }
         [ConfigProperty]
@@ -36,19 +33,19 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
     {
         public static bool IsDebug()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.Config?.IsDebug ?? 0);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.IsDebug ?? 0);
         }
         public static bool IsOutPutFiles()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.Config?.IsOutPutFiles ?? 1);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.IsOutPutFiles ?? 1);
         }
         public static bool IsOutPutAllFiles()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.Config?.IsOutPutAllFiles ?? 1);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance?.IsOutPutAllFiles ?? 1);
         }
         public static bool IsCachePermanent()
         {
-            return ValueTranslator.TrueFalse(SettingsConfig.Instance.Config.IsCachePermanent);
+            return ValueTranslator.TrueFalse(SettingsConfig.Instance.IsCachePermanent);
         }
         /// <summary>
         /// 是否单机部署模式
@@ -56,7 +53,7 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         /// <returns></returns>
         public static bool IsStandAloneDeployMode()
         {
-            return SettingsConfig.Instance?.Config?.DeployMode?.Equals("StandAlone") ?? true;
+            return SettingsConfig.Instance?.DeployMode?.Equals("StandAlone") ?? true;
         }
         /// <summary>
         /// 获取引用路径
@@ -64,7 +61,7 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
         /// <returns></returns>
         public static List<string> GetReferenceDirs()
         {
-            return SettingsConfig.Instance?.Config?.ReferenceDirs?.Split(',').ToList();
+            return SettingsConfig.Instance?.ReferenceDirs?.Split(',').ToList();
         }
     }
 }

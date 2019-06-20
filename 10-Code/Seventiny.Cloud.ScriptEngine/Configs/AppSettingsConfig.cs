@@ -1,16 +1,11 @@
 ﻿using Newtonsoft.Json;
 using SevenTiny.Bantina.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Seventiny.Cloud.ScriptEngine.Configs
 {
     [ConfigName("appsettings")]
     internal class AppSettingsConfig : JsonConfigBase<AppSettingsConfig>
     {
-        public static AppSettingsConfig Instance = new AppSettingsConfig();
-
         [JsonProperty("ConnectionStrings")]
         public ConnectionStrings ConnectionStrings { get; set; }
         [JsonProperty("SevenTinyCloud")]
@@ -33,7 +28,7 @@ namespace Seventiny.Cloud.ScriptEngine.Configs
     {
         public static string GetAppName()
         {
-            return AppSettingsConfig.Instance?.Config?.SevenTinyCloud?.AppName ?? "SevenTinyCloud";
+            return AppSettingsConfig.Instance?.SevenTinyCloud?.AppName ?? "SevenTinyCloud";
         }
     }
 }
