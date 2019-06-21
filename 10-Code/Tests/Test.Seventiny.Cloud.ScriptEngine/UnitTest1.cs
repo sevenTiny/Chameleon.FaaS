@@ -105,9 +105,7 @@ public string GetA(int a)
 ";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
-            var type = typeof(JsonConvert);
-            var ss = type.Assembly;
-            var result = scriptEngineProvider.CheckScript(script);
+            var result = scriptEngineProvider.RunScript<object>(script);
         }
     }
 }
