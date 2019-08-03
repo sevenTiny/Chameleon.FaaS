@@ -1,4 +1,6 @@
-﻿namespace Seventiny.Cloud.ScriptEngine
+﻿using Newtonsoft.Json;
+
+namespace Seventiny.Cloud.ScriptEngine
 {
     /// <summary>
     /// 动态脚本对象
@@ -24,6 +26,7 @@
         /// <summary>
         /// 执行参数
         /// </summary>
+        [JsonIgnore]
         public object[] Parameters { get; set; }
         /// <summary>
         /// 脚本语言

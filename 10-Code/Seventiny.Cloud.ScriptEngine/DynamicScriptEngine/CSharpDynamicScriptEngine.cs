@@ -77,7 +77,7 @@ namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
             var dynamicScriptResult = BuildDynamicScript(dynamicScript.Script, out string errorMessage);
             if (!dynamicScriptResult)
             {
-                _logger.Error(JsonConvert.SerializeObject(dynamicScript) + "|" + JsonConvert.SerializeObject(dynamicScript.Parameters));
+                _logger.Error($"Build Script Error ! Script Info:{JsonConvert.SerializeObject(dynamicScript)}");
                 return Result<T>.Error(errorMessage);
             }
 
