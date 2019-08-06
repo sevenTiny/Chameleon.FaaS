@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Seventiny.Cloud.ScriptEngine.SandBox
+namespace SevenTiny.Cloud.ScriptEngine.SandBox
 {
     [Serializable]
     internal class RunContainer : MarshalByRefObject

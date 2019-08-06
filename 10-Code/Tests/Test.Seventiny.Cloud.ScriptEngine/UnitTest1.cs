@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
-using Seventiny.Cloud.ScriptEngine;
+using SevenTiny.Cloud.ScriptEngine;
 using System;
 using Xunit;
 
-namespace Test.Seventiny.Cloud.ScriptEngine
+namespace Test.SevenTiny.Cloud.ScriptEngine
 {
     public class UnitTest1
     {

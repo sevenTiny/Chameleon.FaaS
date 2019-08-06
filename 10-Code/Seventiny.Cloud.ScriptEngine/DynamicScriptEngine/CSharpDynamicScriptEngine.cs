@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
-using Seventiny.Cloud.ScriptEngine.Configs;
-using Seventiny.Cloud.ScriptEngine.RefrenceManager;
-using Seventiny.Cloud.ScriptEngine.Toolkit;
+using SevenTiny.Cloud.ScriptEngine.Configs;
+using SevenTiny.Cloud.ScriptEngine.RefrenceManager;
+using SevenTiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
@@ -17,7 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Seventiny.Cloud.ScriptEngine.DynamicScriptEngine
+namespace SevenTiny.Cloud.ScriptEngine.DynamicScriptEngine
 {
     /// <summary>
     ///  .NET Compiler Platform ("Roslyn")

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Seventiny.Cloud.ScriptEngine.Configs
+namespace SevenTiny.Cloud.ScriptEngine.Configs
 {
     [ConfigName("ScriptEngine_AssemblyReference")]
     internal class AssemblyReferenceConfig : MySqlRowConfigBase<AssemblyReferenceConfig>

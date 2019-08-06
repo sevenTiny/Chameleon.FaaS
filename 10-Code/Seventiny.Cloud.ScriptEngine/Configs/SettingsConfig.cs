@@ -1,10 +1,10 @@
-﻿using Seventiny.Cloud.ScriptEngine.Toolkit;
+﻿using SevenTiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Seventiny.Cloud.ScriptEngine.Configs
+namespace SevenTiny.Cloud.ScriptEngine.Configs
 {
     [ConfigName("ScriptEngine_Settings")]
     internal class SettingsConfig : MySqlColumnConfigBase<SettingsConfig>

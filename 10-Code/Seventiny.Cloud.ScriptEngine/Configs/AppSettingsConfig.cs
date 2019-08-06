@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SevenTiny.Bantina.Configuration;
 
-namespace Seventiny.Cloud.ScriptEngine.Configs
+namespace SevenTiny.Cloud.ScriptEngine.Configs
 {
     [ConfigName("appsettings")]
     internal class AppSettingsConfig : JsonConfigBase<AppSettingsConfig>

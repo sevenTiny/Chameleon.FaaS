@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Seventiny.Cloud.ScriptEngine.Toolkit
+namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
     /// <summary>
     /// CacheStrategy.Permanent/Temporary

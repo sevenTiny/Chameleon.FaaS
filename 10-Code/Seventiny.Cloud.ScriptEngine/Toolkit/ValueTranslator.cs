@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Seventiny.Cloud.ScriptEngine.Toolkit
+namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
     internal static class ValueTranslator
     {

@@ -1,6 +1,6 @@
 ﻿using SevenTiny.Bantina;
 
-namespace Seventiny.Cloud.ScriptEngine
+namespace SevenTiny.Cloud.ScriptEngine
 {
     public interface IScriptEngineProvider
     {

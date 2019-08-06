@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Seventiny.Cloud.ScriptEngine.Toolkit
+namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
     internal static class ScriptExtension
     {

@@ -1,13 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
-using Seventiny.Cloud.ScriptEngine.Configs;
-using Seventiny.Cloud.ScriptEngine.Toolkit;
+using SevenTiny.Cloud.ScriptEngine.Configs;
+using SevenTiny.Cloud.ScriptEngine.Toolkit;
 using SevenTiny.Bantina.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Seventiny.Cloud.ScriptEngine.RefrenceManager
+namespace SevenTiny.Cloud.ScriptEngine.RefrenceManager
 {
     internal class CSharpReferenceManager
     {

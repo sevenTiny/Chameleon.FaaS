@@ -1,11 +1,11 @@
-﻿using Seventiny.Cloud.ScriptEngine.DynamicScriptEngine;
+﻿using SevenTiny.Cloud.ScriptEngine.DynamicScriptEngine;
 using SevenTiny.Bantina;
 using SevenTiny.Bantina.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Seventiny.Cloud.ScriptEngine
+namespace SevenTiny.Cloud.ScriptEngine
 {
     public class ScriptEngineProvider : IScriptEngineProvider
     {

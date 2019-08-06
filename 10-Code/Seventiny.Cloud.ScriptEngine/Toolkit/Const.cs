@@ -1,4 +1,4 @@
-﻿namespace Seventiny.Cloud.ScriptEngine.Toolkit
+﻿namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
     internal class Const
     {

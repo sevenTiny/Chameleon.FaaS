@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Seventiny.Cloud.ScriptEngine
+namespace SevenTiny.Cloud.ScriptEngine
 {
     /// <summary>
     /// 动态脚本对象
