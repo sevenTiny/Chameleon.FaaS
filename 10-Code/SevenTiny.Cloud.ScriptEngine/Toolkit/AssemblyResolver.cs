@@ -25,18 +25,9 @@ namespace SevenTiny.Cloud.ScriptEngine.Toolkit
             var baseLibPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Const.DefaultOutPutDllPath);
 
             _searchPaths.Add(baseLibPath);
-            //_searchPaths.Add(appLibPath);
 
-            //if (!Directory.Exists(appLibPath))
-            //    Directory.CreateDirectory(appLibPath);
-
-            //DirectoryInfo[] subdirs = new DirectoryInfo(appLibPath).GetDirectories("*", SearchOption.AllDirectories);
-            //foreach (DirectoryInfo dir in subdirs)
-            //{
-            //    if (!_searchPaths.Contains(dir.FullName))
-            //        _searchPaths.Add(dir.FullName);
-            //}
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
             _hasInit = true;
         }
 
