@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace SevenTiny.Cloud.ScriptEngine.RefrenceManager
 {
-    internal class CSharpReferenceManager
+    internal static class CSharpReferenceManager
     {
         private static readonly ILog _logger = new LogManager();
 

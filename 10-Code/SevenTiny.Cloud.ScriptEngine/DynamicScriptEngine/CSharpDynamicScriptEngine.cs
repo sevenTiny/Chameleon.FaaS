@@ -27,7 +27,7 @@ namespace SevenTiny.Cloud.ScriptEngine.DynamicScriptEngine
         private int _tenantId;
         private string _scriptHash;
         private string _projectName;
-        private string _path;
+        private readonly string _path;
         private static object _lock = new object();
         private static AdvancedCache<string, Type> _scriptTypeDict = new AdvancedCache<string, Type>();
         private static AdvancedCache<string, List<MetadataReference>> _metadataReferences = new AdvancedCache<string, List<MetadataReference>>();
@@ -71,9 +71,6 @@ namespace SevenTiny.Cloud.ScriptEngine.DynamicScriptEngine
 
         private Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript)
         {
-            //var watch = new Stopwatch();
-            //var beginTime = DateTime.Now;
-            //watch.Restart();
             var dynamicScriptResult = BuildDynamicScript(dynamicScript.Script, out string errorMessage);
             if (!dynamicScriptResult)
             {
@@ -84,18 +81,12 @@ namespace SevenTiny.Cloud.ScriptEngine.DynamicScriptEngine
             try
             {
                 var scriptResult = CallFunction<T>(dynamicScript.FunctionName, dynamicScript.Parameters);
-                //watch.Stop();
-                //dynamicScriptResult.Dispose();
-                //AddScriptTrackerLog(dynamicScript, beginTime, watch.ElapsedMilliseconds);
                 return Result<T>.Success(data: scriptResult);
             }
             catch (Exception ex)
             {
-                //watch.Stop();
                 string errorMsg = ex.Message + ",innerEx:" + ex.InnerException?.Message;
                 string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, dynamicScript.ProjectName, dynamicScript.FunctionName, ex.Message);
-                //AddScriptTrackerLog(script, beginTime, watch.ElapsedMilliseconds, parameters, errorMsg);
-                //WriteErrMsgToContext(errorMsgContext);
                 _logger.Error(errorMsgContext, ex);
                 return Result<T>.Error(errorMsg);
             }

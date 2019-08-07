@@ -1,6 +1,6 @@
 ﻿namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
-    internal class Const
+    internal static class Const
     {
         public const string DefaultOutPutDllPath = "SeventinyScriptEngine";
         public const string DefaultProjectName = "SevenTinyCloud";

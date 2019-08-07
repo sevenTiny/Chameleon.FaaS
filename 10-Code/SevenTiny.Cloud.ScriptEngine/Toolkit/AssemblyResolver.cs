@@ -8,7 +8,7 @@ namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
     internal class AssemblyResolver
     {
-        private bool _hasInit;
+        private readonly bool _hasInit;
         private readonly List<string> _searchPaths = new List<string>();
         private static readonly AssemblyResolver instance = new AssemblyResolver();
 
@@ -65,7 +65,7 @@ namespace SevenTiny.Cloud.ScriptEngine.Toolkit
             {
                 string filePath = Path.Combine(searchPath, assemblyName.Name + ".dll");
                 if (File.Exists(filePath))
-                    return Assembly.LoadFrom(filePath);
+                    return Assembly.Load(filePath);
             }
             return null;
         }
@@ -74,6 +74,5 @@ namespace SevenTiny.Cloud.ScriptEngine.Toolkit
         {
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
         }
-
     }
 }
