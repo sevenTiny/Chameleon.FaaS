@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
-using SevenTiny.Cloud.ScriptEngine;
+using SevenTiny.Cloud.FaaS;
 using System;
 using Xunit;
 
-namespace Test.SevenTiny.Cloud.ScriptEngine
+namespace Test.SevenTiny.Cloud.FaaS
 {
     public class UnitTest1
     {
@@ -12,7 +12,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine
         {
             IScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
 
-            DynamicScript script = new DynamicScript();
+            DynamicScriptBase script = new DynamicScriptBase();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
             script.ProjectName = "TestApp";
@@ -59,7 +59,7 @@ public int GetB(int a)
         public void CheckScript()
         {
             IScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
-            DynamicScript script = new DynamicScript();
+            DynamicScriptBase script = new DynamicScriptBase();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
             script.ProjectName = "TestApp";
@@ -86,7 +86,7 @@ public int GetA(int a)
         public void Reference()
         {
             IScriptEngineProvider scriptEngineProvider = new ScriptEngineProvider();
-            DynamicScript script = new DynamicScript();
+            DynamicScriptBase script = new DynamicScriptBase();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
             script.ProjectName = "TestApp";
