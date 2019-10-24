@@ -1,32 +1,40 @@
 ﻿using Microsoft.CodeAnalysis;
-using SevenTiny.Cloud.FaaS.Configs;
-using SevenTiny.Cloud.FaaS.Toolkit;
 using SevenTiny.Bantina.Logging;
+using SevenTiny.Cloud.FaaS.Configs;
+using SevenTiny.Cloud.FaaS.CSharp.Configs;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SevenTiny.Cloud.FaaS.RefrenceManager
+namespace SevenTiny.Cloud.FaaS.CSharp.RefrenceManager
 {
     internal static class CSharpReferenceManager
     {
         private static readonly ILog _logger = new LogManager();
 
-        public static void InitMetadataReferences(AdvancedCache<string, List<MetadataReference>> metadataReferences)
+        private static readonly string _currentAppName = AppSettingsConfig.Instance.CurrentAppName;
+
+        private static ConcurrentDictionary<string, List<MetadataReference>> _metadataReferences = new ConcurrentDictionary<string, List<MetadataReference>>();
+
+        public static IDictionary<string, List<MetadataReference>> GetMetaDataReferences() => _metadataReferences;
+
+        /// <summary>
+        /// 初始化元数据引用
+        /// </summary>
+        public static void InitMetadataReferences()
         {
-            if (!metadataReferences.ContainsKey(AppSettingsConfigHelper.GetAppName()))
-                metadataReferences.Insert(AppSettingsConfigHelper.GetAppName(), new List<MetadataReference>(), CacheStrategy.Permanent);
+            _metadataReferences.TryAdd(_currentAppName, new List<MetadataReference>());
 
-            ReferenceNecessaryAssembly(metadataReferences);
-            ReferenceSystemAssembly(metadataReferences);
-            ReferenceExternalAssembly(metadataReferences);
+            ReferenceNecessaryAssembly();
+            ReferenceAssembly();
 
-            var referenceArrayJson = Newtonsoft.Json.JsonConvert.SerializeObject(metadataReferences[AppSettingsConfigHelper.GetAppName()]?.Select(t => t.Display)?.ToArray());
+            var referenceArrayJson = Newtonsoft.Json.JsonConvert.SerializeObject(_metadataReferences[_currentAppName]?.Select(t => t.Display)?.ToArray());
             _logger.Debug($"dll加载完毕,加载信息如下：{referenceArrayJson}");
         }
 
-        private static void ReferenceNecessaryAssembly(AdvancedCache<string, List<MetadataReference>> metadataReferences)
+        private static void ReferenceNecessaryAssembly()
         {
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
             var references = new[]
@@ -46,36 +54,21 @@ namespace SevenTiny.Cloud.FaaS.RefrenceManager
                 MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(System.Runtime.Serialization.DataContractSerializer).Assembly.Location),
             };
-            metadataReferences[AppSettingsConfigHelper.GetAppName()].AddRange(references);
-        }
-
-        /// <summary>
-        /// 公共引用包，在配置文件中配置引用key=System
-        /// </summary>
-        /// <param name="metadataReferences"></param>
-        private static void ReferenceSystemAssembly(AdvancedCache<string, List<MetadataReference>> metadataReferences)
-        {
-            ReferenceAssemblyByAppName(metadataReferences, Const.ScriptEngine_AssemblyReferenceConfig_SystemAssemblyKey);
-        }
-
-        private static void ReferenceExternalAssembly(AdvancedCache<string, List<MetadataReference>> metadataReferences)
-        {
-            ReferenceAssemblyByAppName(metadataReferences, AppSettingsConfigHelper.GetAppName());
+            _metadataReferences[_currentAppName].AddRange(references);
         }
 
         /// <summary>
         /// 引用第三方包，配置文件中配置引用key=对应服务的应用名
         /// </summary>
-        /// <param name="metadataReferences"></param>
-        /// <param name="appName"></param>
-        private static void ReferenceAssemblyByAppName(AdvancedCache<string, List<MetadataReference>> metadataReferences, string appName)
+        private static void ReferenceAssembly()
         {
             //这里配置的程序集引用要写文件全名，包括路径和后缀
-            var assemblyInfos = AssemblyReferenceConfig.GetAssemblyInfoByAppName(appName);
+            var assemblyInfos = AssemblyReferenceConfig.GetCurrentAppAssemblyReferenceInfos();
 
             //为不为空都把默认执行路径加上扫描
-            var dirs = SettingsConfigHelper.GetReferenceDirs();
-            if (dirs == null || !dirs.Any())
+            var dirs = FaaSSettingsConfigHelper.GetReferenceDirs();
+
+            if (dirs == null)
                 dirs = new List<string>();
 
             dirs.Insert(0, AppContext.BaseDirectory);
@@ -93,7 +86,7 @@ namespace SevenTiny.Cloud.FaaS.RefrenceManager
                             continue;
                         }
                         //如果文件存在，则加载完成后跳过后续扫描
-                        metadataReferences[AppSettingsConfigHelper.GetAppName()].Add(MetadataReference.CreateFromFile(fileFullPath));
+                        _metadataReferences[_currentAppName].Add(MetadataReference.CreateFromFile(fileFullPath));
                         break;
                     }
                 }

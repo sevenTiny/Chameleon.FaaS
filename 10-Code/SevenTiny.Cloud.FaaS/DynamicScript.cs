@@ -5,16 +5,16 @@ namespace SevenTiny.Cloud.FaaS
     /// <summary>
     /// 动态脚本对象
     /// </summary>
-    public class DynamicScriptBase
+    public class DynamicScript
     {
         /// <summary>
         /// 脚本所属的租户Id，默认0为全局脚本
         /// </summary>
         public int TenantId { get; set; } = 0;
         /// <summary>
-        /// 项目名称
+        /// 应用名称
         /// </summary>
-        public string ProjectName { get; set; }
+        public string AppName { get; set; }
         /// <summary>
         /// 脚本内容
         /// </summary>

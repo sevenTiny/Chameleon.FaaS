@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SevenTiny.Cloud.FaaS.CSharp
 {
-    public class CSharpDynamicScript : DynamicScriptBase
+    public class Startup
     {
     }
 }

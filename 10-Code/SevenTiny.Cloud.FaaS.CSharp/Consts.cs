@@ -1,12 +1,8 @@
-﻿namespace SevenTiny.Cloud.FaaS.Toolkit
+﻿namespace SevenTiny.Cloud.FaaS.CSharp
 {
-    internal static class Const
+    internal static class Consts
     {
-        public const string DefaultOutPutDllPath = "SeventinyScriptEngine";
-        public const string DefaultProjectName = "SevenTinyCloud";
-
-        public const string ScriptEngine_AssemblyReferenceConfig_SystemAssemblyKey = "System";
-        public const string ScriptEngine_AssemblyReferenceConfig_ReferenceDllDirectoryName = "SeventinyCloudReferences";
+        public const string DefaultOutPutDllPath = "SeventinyCloudFaaS";
 
         //Template
         public const string EndUsing = "//EndUsing";

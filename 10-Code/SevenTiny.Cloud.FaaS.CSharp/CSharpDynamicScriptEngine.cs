@@ -2,14 +2,15 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
-using SevenTiny.Cloud.FaaS.Configs;
-using SevenTiny.Cloud.FaaS.RefrenceManager;
-using SevenTiny.Cloud.FaaS.Toolkit;
 using SevenTiny.Bantina;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
 using SevenTiny.Bantina.Validation;
+using SevenTiny.Cloud.FaaS.Configs;
+using SevenTiny.Cloud.FaaS.CSharp;
+using SevenTiny.Cloud.FaaS.CSharp.RefrenceManager;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,47 +30,45 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
         private string _projectName;
         private readonly string _path;
         private static object _lock = new object();
-        private static AdvancedCache<string, Type> _scriptTypeDict = new AdvancedCache<string, Type>();
-        private static AdvancedCache<string, List<MetadataReference>> _metadataReferences = new AdvancedCache<string, List<MetadataReference>>();
+        private static IDictionary<string, Type> _scriptTypeDict = new ConcurrentDictionary<string, Type>();
         private readonly ILog _logger = new LogManager();
+        private readonly static string _currentAppName = AppSettingsConfig.Instance.CurrentAppName;
 
         static CSharpDynamicScriptEngine()
         {
-            //监控项目路径
-            AssemblyResolver.Instance.Init();
             //初始化引用
-            CSharpReferenceManager.InitMetadataReferences(_metadataReferences);
+            CSharpReferenceManager.InitMetadataReferences();
         }
 
         public CSharpDynamicScriptEngine()
         {
-            _projectName = Const.DefaultProjectName;
-            _path = Path.Combine(AppContext.BaseDirectory, Const.DefaultOutPutDllPath);
+            _projectName = _currentAppName;
+            _path = Path.Combine(AppContext.BaseDirectory, Consts.DefaultOutPutDllPath);
         }
 
-        private void ArgumentCheckSet(DynamicScriptBase dynamicScript)
+        private void ArgumentCheckSet(DynamicScript dynamicScript)
         {
             _tenantId = dynamicScript.TenantId;
             dynamicScript.Script.CheckNullOrEmpty("script can not be null");
             dynamicScript.FunctionName.CheckNullOrEmpty("function name can not be null");
-            if (!string.IsNullOrEmpty(dynamicScript.ProjectName))
-                _projectName = dynamicScript.ProjectName;
+            if (!string.IsNullOrEmpty(dynamicScript.AppName))
+                _projectName = dynamicScript.AppName;
         }
 
-        public Result<T> Run<T>(DynamicScriptBase dynamicScript)
+        public Result<T> Run<T>(DynamicScript dynamicScript)
         {
             ArgumentCheckSet(dynamicScript);
             return RunningDynamicScript<T>(dynamicScript);
         }
 
-        public Result CheckScript(DynamicScriptBase dynamicScript)
+        public Result CheckScript(DynamicScript dynamicScript)
         {
             dynamicScript.FunctionName = "_Function";
             ArgumentCheckSet(dynamicScript);
             return BuildDynamicScript(dynamicScript.Script, out string errorMsg) ? Result.Success() : Result.Error(errorMsg);
         }
 
-        private Result<T> RunningDynamicScript<T>(DynamicScriptBase dynamicScript)
+        private Result<T> RunningDynamicScript<T>(DynamicScript dynamicScript)
         {
             var dynamicScriptResult = BuildDynamicScript(dynamicScript.Script, out string errorMessage);
             if (!dynamicScriptResult)
@@ -86,7 +85,7 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
             catch (Exception ex)
             {
                 string errorMsg = ex.Message + ",innerEx:" + ex.InnerException?.Message;
-                string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, dynamicScript.ProjectName, dynamicScript.FunctionName, ex.Message);
+                string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, dynamicScript.AppName, dynamicScript.FunctionName, ex.Message);
                 _logger.Error(errorMsgContext, ex);
                 return Result<T>.Error(errorMsg);
             }
@@ -113,32 +112,32 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
             string usingNameSpaces = string.Empty;
             string code = script;
 
-            if (script.Contains(Const.EndUsing))
+            if (script.Contains(Consts.EndUsing))
             {
-                string[] scriptArray = Regex.Split(script, Const.EndUsing, RegexOptions.IgnoreCase);
+                string[] scriptArray = Regex.Split(script, Consts.EndUsing, RegexOptions.IgnoreCase);
                 usingNameSpaces = scriptArray[0];
                 code = scriptArray[1];
             }
 
-            return Const.CsharpScriptTemplate
-                .Replace(commonUsingTag, Const.CSharpCommonUsing)
+            return Consts.CsharpScriptTemplate
+                .Replace(commonUsingTag, Consts.CSharpCommonUsing)
                 .Replace(usingTag, usingNameSpaces)
                 .Replace(namespacesTag, string.Empty)
                 .Replace(tenantIdTag, _tenantId.ToString())
-                .Replace(commonCodeTag, Const.CSharpCommonCode)
-                .Replace(codeTag, code)
-                .ClearScript()
-                .RemoveEmptyLines();
+                .Replace(commonCodeTag, Consts.CSharpCommonCode)
+                .Replace(codeTag, code);
+                //.ClearScript()
+                //.RemoveEmptyLines();
         }
 
         private string GetScriptKeyHash(string script)
         {
-            return String.Format(Const.AssemblyScriptKey, DynamicScriptLanguage.CSharp, _tenantId, _projectName, MD5Helper.GetMd5Hash(script));
+            return String.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.CSharp, _tenantId, _projectName, MD5Helper.GetMd5Hash(script));
         }
 
         private bool BuildDynamicScriptAndCreateType(string script, out string errorMsg)
         {
-            string typeName = String.Format(Const.MethodTypeName, _tenantId);
+            string typeName = String.Format(Consts.MethodTypeName, _tenantId);
             errorMsg = string.Empty;
             try
             {
@@ -158,7 +157,7 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
                         if (!_scriptTypeDict.ContainsKey(_scriptHash))
                         {
                             var type = asm.GetType(typeName);
-                            _scriptTypeDict.Insert(_scriptHash, type, CacheStrategy.Permanent);
+                            _scriptTypeDict.Add(_scriptHash, type);
                         }
                         return true;
                     }
@@ -187,11 +186,11 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
 
             var sourceTree = CSharpSyntaxTree.ParseText(script, path: assemblyName + ".cs", encoding: Encoding.UTF8);
 
-            var references = _metadataReferences[AppSettingsConfigHelper.GetAppName()];
+            var references = CSharpReferenceManager.GetMetaDataReferences()[_currentAppName];
 
             var compilation = CSharpCompilation.Create(assemblyName,
                 new[] { sourceTree }, references,
-                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(SettingsConfigHelper.IsDebug() ? OptimizationLevel.Debug : OptimizationLevel.Release));
+                new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(FaaSSettingsConfigHelper.IsDebugMode() ? OptimizationLevel.Debug : OptimizationLevel.Release));
 
             Assembly assembly;
             using (var assemblyStream = new MemoryStream())
@@ -206,13 +205,8 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
                         var pdbBytes = pdbStream.GetBuffer();
                         assembly = Assembly.Load(assemblyBytes, pdbBytes);
                         //output files
-                        if (SettingsConfigHelper.IsOutPutFiles())
-                        {
-                            if (SettingsConfigHelper.IsOutPutAllFiles())
-                                OutputDynamicScriptAllFile(script, assemblyName, assemblyBytes, pdbBytes);
-                            else
-                                OutputDynamicScriptDllFile(assemblyName, assemblyBytes);
-                        }
+                        if (FaaSSettingsConfigHelper.IsOutPutFiles())
+                            OutputDynamicScriptAllFile(script, assemblyName, assemblyBytes, pdbBytes);
                     }
                     else
                     {
@@ -220,7 +214,7 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
                         foreach (var msg in emitResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => string.Format("[{0}]:{1}({2})", d.Id, d.GetMessage(), d.Location.GetLineSpan().StartLinePosition)))
                         {
                             msgs.AppendLine(msg);
-                            if (SettingsConfigHelper.IsOutPutFiles())
+                            if (FaaSSettingsConfigHelper.IsOutPutFiles())
                                 WriteDynamicScriptCs(Path.Combine(EnsureOutputPath(), assemblyName + ".cs"), script);
                             _logger.Error(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, "CSharp", _projectName, msg, _scriptHash));
                         }
@@ -229,15 +223,10 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
                     }
                 }
             }
-            _logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict?.Count}  _metadataReferences:{ _metadataReferences[_projectName]?.Count}");
+            _logger.Debug($"CreateAsmExecutor->_context:{_tenantId},{"CSharp"}, {_projectName},{_scriptHash}   _scriptTypeDict:{_scriptTypeDict?.Count}  _metadataReferences:{ CSharpReferenceManager.GetMetaDataReferences()[_projectName]?.Count}");
             return assembly;
         }
 
-        private void OutputDynamicScriptDllFile(string assemblyName, byte[] assemblyBytes)
-        {
-            string path = EnsureOutputPath();
-            WriteDynamicScriptFile(Path.Combine(path, assemblyName + ".dll"), assemblyBytes);
-        }
         private void OutputDynamicScriptAllFile(string script, string assemblyName, byte[] assemblyBytes, byte[] pdbBytes)
         {
             string path = EnsureOutputPath();
@@ -304,7 +293,7 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
         /// <returns></returns>
         private T CallFunction<T>(string functionName, params object[] parameters)
         {
-            ArgumentChecker.NotNullOrEmpty(functionName, nameof(functionName));
+            Ensure.ArgumentNotNullOrEmpty(functionName, nameof(functionName));
             if (!string.IsNullOrEmpty(_scriptHash) && _scriptTypeDict.ContainsKey(_scriptHash))
             {
                 var type = _scriptTypeDict[_scriptHash];

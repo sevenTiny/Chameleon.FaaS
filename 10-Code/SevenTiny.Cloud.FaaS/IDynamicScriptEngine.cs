@@ -1,8 +1,8 @@
 ﻿using SevenTiny.Bantina;
 
-namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
+namespace SevenTiny.Cloud.FaaS
 {
-    internal interface IDynamicScriptEngine
+    public interface IDynamicScriptEngine
     {
         /// <summary>
         /// 执行脚本
@@ -10,12 +10,12 @@ namespace SevenTiny.Cloud.FaaS.DynamicScriptEngine
         /// <typeparam name="T"></typeparam>
         /// <param name="dynamicScript"></param>
         /// <returns></returns>
-        Result<T> Run<T>(DynamicScriptBase dynamicScript);
+        Result<T> Run<T>(DynamicScript dynamicScript);
         /// <summary>
         /// 校验脚本
         /// </summary>
         /// <param name="dynamicScript"></param>
         /// <returns></returns>
-        Result CheckScript(DynamicScriptBase dynamicScript);
+        Result CheckScript(DynamicScript dynamicScript);
     }
 }

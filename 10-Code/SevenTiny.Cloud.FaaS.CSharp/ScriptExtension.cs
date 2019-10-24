@@ -2,6 +2,7 @@
 
 namespace SevenTiny.Cloud.FaaS.Toolkit
 {
+    //TODO：这几个string的扩展去掉
     internal static class ScriptExtension
     {
         private static string emptyLinePattern = @"^\s*$\n|\r";

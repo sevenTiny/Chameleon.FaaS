@@ -1,34 +1,29 @@
 ﻿using Newtonsoft.Json;
 using SevenTiny.Bantina.Configuration;
+using SevenTiny.Cloud.FaaS.Exceptions;
 
 namespace SevenTiny.Cloud.FaaS.Configs
 {
     [ConfigName("appsettings")]
-    internal class AppSettingsConfig : JsonConfigBase<AppSettingsConfig>
+    public class AppSettingsConfig : JsonConfigBase<AppSettingsConfig>
     {
         [JsonProperty("ConnectionStrings")]
-        public ConnectionStrings ConnectionStrings { get; set; }
+        public ConnectionStrings ConnectionStrings { get; private set; }
         [JsonProperty("SevenTinyCloud")]
-        public SevenTinyCloud SevenTinyCloud { get; set; }
+        public SevenTinyCloud SevenTinyCloud { get; private set; }
+
+        public string CurrentAppName => Instance?.SevenTinyCloud?.AppName ?? throw new ConfigNodeNotFoundException("appsettings.SevenTinyCloud.AppName", "appsettings.json -> SevenTinyCloud(object) -> AppName(key) node notfound int config appsettins.json");
     }
 
-    internal class SevenTinyCloud
+    public class SevenTinyCloud
     {
         [JsonProperty]
-        public string AppName { get; set; }
+        public string AppName { get; private set; }
     }
 
-    internal class ConnectionStrings
+    public class ConnectionStrings
     {
         [JsonProperty]
-        public string SevenTinyConfig { get; set; }
-    }
-
-    internal static class AppSettingsConfigHelper
-    {
-        public static string GetAppName()
-        {
-            return AppSettingsConfig.Instance?.SevenTinyCloud?.AppName ?? "SevenTinyCloud";
-        }
+        public string SevenTinyConfig { get; private set; }
     }
 }
