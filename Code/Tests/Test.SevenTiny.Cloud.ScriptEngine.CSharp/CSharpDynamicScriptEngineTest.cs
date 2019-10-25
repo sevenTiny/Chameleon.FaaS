@@ -8,14 +8,13 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
     public class CSharpDynamicScriptEngineTest
     {
         [Fact]
-        public void Execute()
+        public void MultiExecute()
         {
             IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
-            script.AppName = "TestApp";
             script.Script =
 @"
         using System;
@@ -31,7 +30,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
-            //script.ExecutionStatistics = true;
+            //script.ExecutionStatistics = true;//可以输出执行耗时，内存占用
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -52,7 +51,6 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
-            script.AppName = "TestApp";
 
             //先编译A执行A
             script.Script =

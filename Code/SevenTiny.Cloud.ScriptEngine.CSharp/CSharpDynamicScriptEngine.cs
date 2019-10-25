@@ -2,13 +2,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
-using SevenTiny.Bantina;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
 using SevenTiny.Bantina.Validation;
 using SevenTiny.Cloud.ScriptEngine.Configs;
-using SevenTiny.Cloud.ScriptEngine.CSharp;
-using SevenTiny.Cloud.ScriptEngine.CSharp.RefrenceManager;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace SevenTiny.Cloud.ScriptEngine.CSharp
 {
@@ -104,7 +100,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             catch (Exception ex)
             {
                 string errorMsg = ex.Message + ",innerEx:" + ex.InnerException?.Message;
-                string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, dynamicScript.AppName, dynamicScript.FunctionName, ex.Message);
+                string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, _currentAppName, dynamicScript.FunctionName, ex.Message);
                 _logger.Error(errorMsgContext, ex);
                 return DynamicScriptExecuteResult<T>.Error(errorMsg);
             }

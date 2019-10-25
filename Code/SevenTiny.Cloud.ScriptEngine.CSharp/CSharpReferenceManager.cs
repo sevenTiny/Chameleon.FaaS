@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SevenTiny.Cloud.ScriptEngine.CSharp.RefrenceManager
+namespace SevenTiny.Cloud.ScriptEngine.CSharp
 {
     internal static class CSharpReferenceManager
     {
