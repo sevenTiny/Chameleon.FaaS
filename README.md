@@ -16,31 +16,31 @@ The ability to dynamically compile can be easily applied to scenarios such as Pa
 > This code can be found in the Demo.cs file of the Test.SevenTiny.Cloud.ScriptEngine.CSharp project.
 
 ```CSharp
-IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
-
-DynamicScript script = new DynamicScript();
-
-script.TenantId = 0;
-script.Language = DynamicScriptLanguage.CSharp;
-script.Script =
-@"
-using System;
-public class Test
+[Fact]
+public void Execute()
 {
-    public int GetA(int a)
+    IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
+    DynamicScript script = new DynamicScript();
+    script.TenantId = 0;
+    script.Language = DynamicScriptLanguage.CSharp;
+    script.Script =
+    @"
+    using System;
+    public class Test
     {
-        return a;
+        public int GetA(int a)
+        {
+            return a;
+        }
     }
+    ";
+    script.ClassFullName = "Test";
+    script.FunctionName = "GetA";
+    script.Parameters = new object[] { 111 };
+    var result = scriptEngineProvider.Run<int>(script);
+    Assert.True(result.IsSuccess);
+    Assert.Equal(111, result.Data);
 }
-";
-script.ClassFullName = "Test";
-script.FunctionName = "GetA";
-script.Parameters = new object[] { 111 };
-
-var result = scriptEngineProvider.Run<int>(script);
-
-Assert.True(result.IsSuccess);
-Assert.Equal(111, result.Data);
 ```
 
 ## 支持模式 Support mode
