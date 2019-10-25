@@ -12,6 +12,9 @@ At the heart of the FaaS framework is the "Dynamic Scripting Engine", which prov
 The ability to dynamically compile can be easily applied to scenarios such as PaaS, FaaS, sandboxing, and plug-in to maximize the need for "dynamic" and "hot swap".
 
 ## 示例代码 Example
+> 该代码可以在 Test.SevenTiny.Cloud.ScriptEngine.CSharp 项目的 Demo.cs 文件中找到
+> This code can be found in the Demo.cs file of the Test.SevenTiny.Cloud.ScriptEngine.CSharp project.
+
 ```CSharp
 IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
 
