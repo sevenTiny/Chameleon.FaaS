@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SevenTiny.Cloud.FaaS.SandBox
+namespace SevenTiny.Cloud.ScriptEngine.SandBox
 {
     internal class ExecutionResult
     {

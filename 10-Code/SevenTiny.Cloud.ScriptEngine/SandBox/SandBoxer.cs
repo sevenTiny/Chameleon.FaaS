@@ -13,7 +13,7 @@
 //using System.Threading.Tasks;
 //using Fasterflect;
 
-//namespace SevenTiny.Cloud.FaaS.SandBox
+//namespace SevenTiny.Cloud.ScriptEngine.SandBox
 //{
 //    public class SandBoxer
 //    {

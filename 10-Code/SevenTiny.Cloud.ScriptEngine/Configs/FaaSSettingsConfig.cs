@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SevenTiny.Cloud.FaaS.Configs
+namespace SevenTiny.Cloud.ScriptEngine.Configs
 {
     [ConfigName("FaaS_Settings")]
     internal class FaaSSettingsConfig : MySqlColumnConfigBase<FaaSSettingsConfig>
@@ -35,8 +35,11 @@ namespace SevenTiny.Cloud.FaaS.Configs
         /// <returns></returns>
         public static List<string> GetReferenceDirs()
         {
-            //默认扫描当前用户.nuget目录，这个目录不需要配置
-            List<string> referenceDirs = new List<string>() { $"C:\\Users\\{Environment.UserName}\\.nuget\\packages" };
+            List<string> referenceDirs = new List<string>()
+            {
+                //默认扫描当前用户.nuget目录，这个目录不需要配置
+                $"C:\\Users\\{Environment.UserName}\\.nuget\\packages"
+            };
             var configDirs = FaaSSettingsConfig.Instance?.ReferenceDirs?.Split(',').ToList();
             if (configDirs != null && configDirs.Any())
                 referenceDirs.AddRange(configDirs);

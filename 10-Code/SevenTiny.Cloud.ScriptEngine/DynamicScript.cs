@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SevenTiny.Cloud.FaaS
+namespace SevenTiny.Cloud.ScriptEngine
 {
     /// <summary>
     /// 动态脚本对象
@@ -37,5 +37,10 @@ namespace SevenTiny.Cloud.FaaS
         /// 脚本语言
         /// </summary>
         public DynamicScriptLanguage Language { get; set; }
+        /// <summary>
+        /// 是否收集执行统计信息
+        /// 默认False：统计非常耗时且会带来更多GC开销，正常运行过程请关闭！
+        /// </summary>
+        public bool ExecutionStatistics { get; set; } = false;
     }
 }

@@ -1,9 +1,9 @@
 ﻿using SevenTiny.Bantina.Configuration;
-using SevenTiny.Cloud.FaaS.Configs;
+using SevenTiny.Cloud.ScriptEngine.Configs;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SevenTiny.Cloud.FaaS.CSharp.Configs
+namespace SevenTiny.Cloud.ScriptEngine.CSharp.Configs
 {
     [ConfigName("FaaS_CSharpAssemblyReference")]
     internal class AssemblyReferenceConfig : MySqlRowConfigBase<AssemblyReferenceConfig>
@@ -20,7 +20,7 @@ namespace SevenTiny.Cloud.FaaS.CSharp.Configs
 
         public static List<AssemblyInfo> GetCurrentAppAssemblyReferenceInfos()
         {
-            return Instance?.Where(t => t.AppName.ToUpper().Equals(DefaultAppName) || t.AppName.Equals(AppSettingsConfig.Instance.CurrentAppName))?.Select(t => new AssemblyInfo { AppName = t.AppName, Assembly = t.Assembly })?.ToList();
+            return Instance?.Where(t => t.AppName.ToUpper().Equals(DefaultAppName) || t.AppName.Equals(AppSettingsConfigHelper.GetCurrentAppName()))?.Select(t => new AssemblyInfo { AppName = t.AppName, Assembly = t.Assembly })?.ToList();
         }
     }
 

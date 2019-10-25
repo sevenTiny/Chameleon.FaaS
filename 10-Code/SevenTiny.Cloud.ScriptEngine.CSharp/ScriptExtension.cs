@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SevenTiny.Cloud.FaaS.Toolkit
+namespace SevenTiny.Cloud.ScriptEngine.Toolkit
 {
     //TODO：这几个string的扩展去掉
     internal static class ScriptExtension

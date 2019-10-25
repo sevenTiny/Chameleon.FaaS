@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SevenTiny.Cloud.FaaS.Exceptions
+namespace SevenTiny.Cloud.ScriptEngine.Exceptions
 {
     /// <summary>
     /// 配置文件节点没有找到

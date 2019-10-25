@@ -1,20 +1,20 @@
 ﻿using Microsoft.CodeAnalysis;
 using SevenTiny.Bantina.Logging;
-using SevenTiny.Cloud.FaaS.Configs;
-using SevenTiny.Cloud.FaaS.CSharp.Configs;
+using SevenTiny.Cloud.ScriptEngine.Configs;
+using SevenTiny.Cloud.ScriptEngine.CSharp.Configs;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SevenTiny.Cloud.FaaS.CSharp.RefrenceManager
+namespace SevenTiny.Cloud.ScriptEngine.CSharp.RefrenceManager
 {
     internal static class CSharpReferenceManager
     {
         private static readonly ILog _logger = new LogManager();
 
-        private static readonly string _currentAppName = AppSettingsConfig.Instance.CurrentAppName;
+        private static string _currentAppName => AppSettingsConfigHelper.GetCurrentAppName();
 
         private static ConcurrentDictionary<string, List<MetadataReference>> _metadataReferences = new ConcurrentDictionary<string, List<MetadataReference>>();
 
@@ -31,7 +31,7 @@ namespace SevenTiny.Cloud.FaaS.CSharp.RefrenceManager
             ReferenceAssembly();
 
             var referenceArrayJson = Newtonsoft.Json.JsonConvert.SerializeObject(_metadataReferences[_currentAppName]?.Select(t => t.Display)?.ToArray());
-            _logger.Debug($"dll加载完毕,加载信息如下：{referenceArrayJson}");
+            _logger.Debug($"dll load finished,load detail：{referenceArrayJson}");
         }
 
         private static void ReferenceNecessaryAssembly()
@@ -73,6 +73,8 @@ namespace SevenTiny.Cloud.FaaS.CSharp.RefrenceManager
 
             dirs.Insert(0, AppContext.BaseDirectory);
 
+            _logger.Debug($"scan config dirs: [{string.Join(",", dirs)}].");
+
             if (assemblyInfos != null && assemblyInfos.Any())
             {
                 foreach (var assemblyInfo in assemblyInfos)
@@ -82,7 +84,6 @@ namespace SevenTiny.Cloud.FaaS.CSharp.RefrenceManager
                         var fileFullPath = Path.Combine(dir, assemblyInfo.Assembly);
                         if (!File.Exists(fileFullPath))
                         {
-                            _logger.Debug($"reference file [{fileFullPath}] in config not found.");
                             continue;
                         }
                         //如果文件存在，则加载完成后跳过后续扫描
