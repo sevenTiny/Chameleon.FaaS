@@ -12,7 +12,7 @@ At the heart of the FaaS framework is the "Dynamic Scripting Engine", which prov
 The ability to dynamically compile can be easily applied to scenarios such as PaaS, FaaS, sandboxing, and plug-in to maximize the need for "dynamic" and "hot swap".
 
 ## 示例代码 Example
-> 该代码可以在 Test.SevenTiny.Cloud.ScriptEngine.CSharp 项目的 Demo.cs 文件中找到
+> 该代码可以在 Test.SevenTiny.Cloud.ScriptEngine.CSharp 项目的 Demo.cs 文件中找到  
 > This code can be found in the Demo.cs file of the Test.SevenTiny.Cloud.ScriptEngine.CSharp project.
 
 ```CSharp
@@ -43,20 +43,14 @@ Assert.True(result.IsSuccess);
 Assert.Equal(111, result.Data);
 ```
 
-## 支持模式
+## 支持模式 Support mode
 1. SDK Nuget 本地模式 | Nuget SDK local mode
 2. RPC远程调用模式 | Rpc remote execute mode
 3. Restful Api远程调用模式 | Restful api request mode
 4. 定时任务模式 | Timed task mode
 
-# Support mode
-1. SDK Nuget local mode | Nuget SDK local mode
-2. RPC remote call mode | Rpc remote execute mode
-3. Restful Api remote call mode | Restful api request mode
-4. Timed task mode | Timed task mode
-
 ## 使用方式
-> 首先需要提供MySql环境，并导入框架的SQL以提供远程配置的能力，祥见使用教程
+> 首先需要提供MySql环境，并导入框架的SQL以提供远程配置的能力，详见使用教程
 1. 直接引用对应语言的SDK，开启本地模式使用
 2. 部署Grpc服务端，客户端采用 Grpc 远程调用
 3. 部署webapi服务端，客户端 http 请求远程调用
