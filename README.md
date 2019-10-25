@@ -81,26 +81,24 @@ public void Execute()
 
 ## 数据库表说明
 > 需注意，部分数据库表充当着远程配置的角色，例如：FaaS_Settings，FaaS_Settings，Logging
-
-- FaaS_Settings
+- FaaS_Settings  
 全局设置，用于设置脚本编译模式、是否输出编译文件、nuget引用目录等信息
-- FaaS_CSharpAssemblyReference
+- FaaS_CSharpAssemblyReference  
 CSharp 环境动态脚本需要引用的dll路径配置（该dll应该存在于任意一个FaaS_Settings配置中的nuget引用目录的相对地址）
 AppName列是为了区分不同的AppName动态脚本引擎服务需要引用不同的dll而不是全部加载到服务中，可以根据不同的应用配置不同的dll引用。脚本引擎编译时，会加载appsettings.json 配置文件中的 SevenTinyCloud -> AppName 对应的数据库中配置的dll，无论有多少个AppName节点，AppName=System下配置的dll都会被加载，该AppName是全局默认加载的配置信息，当然你可以全部配置在System节点中，但是那样并不好区分）
-- Logging
+- Logging  
 日志组件配置，可以设置脚本引擎服务中不同等级的日志是否输出。例如讲Level_Debug设置为0，则所有的Debug日志将不会输出
-- DynamicScript
+- DynamicScript  
 FaaS 平台下用户配置的脚本将存储在这个数据库表中
 
 ## Database Table Description
 > Note that some database tables act as remote configuration roles, for example: FaaS_Settings, FaaS_Settings, Logging
-
-- FaaS_Settings
+- FaaS_Settings  
 Global settings for setting script compilation mode, outputting compiled files, nuget reference directories, etc.
-- FaaS_CSharpAssemblyReference
+- FaaS_CSharpAssemblyReference  
 The CSharp environment dynamic script needs to reference the dll path configuration (the dll should exist in the relative address of the nuget reference directory in any FaaS_Settings configuration)
 The AppName column is used to distinguish between different AppName dynamic scripting engine services that need to reference different dlls instead of all loaded into the service. Different dll references can be configured according to different applications. When the script engine compiles, it will load the dll configured in the database corresponding to SevenTinyCloud -> AppName in the appsettings.json configuration file. No matter how many AppName nodes, the dll configured under AppName=System will be loaded. The AppName is the global default load. Configuration information, of course, you can configure all in the System node, but that is not a good distinction)
-- Logging
+- Logging  
 Log component configuration, you can set whether the different levels of logs in the script engine service are output. For example, if Level_Debug is set to 0, all Debug logs will not be output.
-- DynamicScript
+- DynamicScript  
 User-configured scripts under the FaaS platform will be stored in this database table.
