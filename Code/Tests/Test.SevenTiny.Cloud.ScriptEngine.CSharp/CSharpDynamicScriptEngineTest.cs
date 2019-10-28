@@ -7,6 +7,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 {
     public class CSharpDynamicScriptEngineTest
     {
+        [Trait("desc","多次执行")]
         [Fact]
         public void MultiExecute()
         {
@@ -52,6 +53,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             Assert.Equal(10000, sum);
         }
 
+        [Trait("desc","执行同名不同类的不同方法")]
         [Fact]
         public void RepeatClassExecute()
         {

@@ -133,6 +133,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
                             return false;
                         }
                         _scriptTypeDict.Add(_scriptHash, type);
+                        return true;
                     }
                 }
                 return false;
