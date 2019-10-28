@@ -14,6 +14,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SevenTiny.Cloud.ScriptEngine.CSharp
 {
@@ -41,16 +43,16 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             _path = Path.Combine(AppContext.BaseDirectory, Consts.DefaultOutPutDllPath);
         }
 
-        public DynamicScriptExecuteResult<T> Run<T>(DynamicScript dynamicScript)
-        {
-            DynamicScriptPropertiesCheck(dynamicScript);
-            return RunningDynamicScript<T>(dynamicScript);
-        }
-
         public DynamicScriptExecuteResult CheckScript(DynamicScript dynamicScript)
         {
             DynamicScriptPropertiesCheck(dynamicScript);
             return BuildDynamicScript(dynamicScript, out string errorMsg) ? DynamicScriptExecuteResult.Success() : DynamicScriptExecuteResult.Error(errorMsg);
+        }
+
+        public DynamicScriptExecuteResult<T> Run<T>(DynamicScript dynamicScript)
+        {
+            DynamicScriptPropertiesCheck(dynamicScript);
+            return RunningDynamicScript<T>(dynamicScript);
         }
 
         private void DynamicScriptPropertiesCheck(DynamicScript dynamicScript)
@@ -73,13 +75,13 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             try
             {
                 //是否开启执行分析,统计非常耗时且会带来更多GC开销，正常运行过程请关闭！
-                if (dynamicScript.ExecutionStatistics)
+                if (dynamicScript.IsExecutionStatistics)
                 {
                     Stopwatch stopwatch = new Stopwatch();  //程序执行时间
                     var startMemory = GC.GetTotalMemory(true);  //方法调用内存占用
                     stopwatch.Start();
 
-                    var result = CallFunction<T>(dynamicScript.FunctionName, dynamicScript.Parameters);
+                    var result = CallFunction<T>(dynamicScript);
 
                     stopwatch.Stop();
                     result.TotalMemoryAllocated = GC.GetTotalMemory(true) - startMemory;
@@ -87,7 +89,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
                     return result;
                 }
 
-                return CallFunction<T>(dynamicScript.FunctionName, dynamicScript.Parameters);
+                return CallFunction<T>(dynamicScript);
             }
             catch (MissingMethodException missingMethod)
             {
@@ -114,9 +116,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             try
             {
                 if (_scriptTypeDict.ContainsKey(_scriptHash))
-                {
                     return true;
-                }
 
                 lock (_lock)
                 {
@@ -126,17 +126,13 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
                     var asm = CreateAsmExecutor(dynamicScript.Script, out errorMessage);
                     if (asm != null)
                     {
-                        if (!_scriptTypeDict.ContainsKey(_scriptHash))
+                        var type = asm.GetType(dynamicScript.ClassFullName);
+                        if (type == null)
                         {
-                            var type = asm.GetType(dynamicScript.ClassFullName);
-                            if (type == null)
-                            {
-                                errorMessage = $"type [{dynamicScript.ClassFullName}] not found in the assembly [{asm.FullName}].";
-                                return false;
-                            }
-                            _scriptTypeDict.Add(_scriptHash, type);
+                            errorMessage = $"type [{dynamicScript.ClassFullName}] not found in the assembly [{asm.FullName}].";
+                            return false;
                         }
-                        return true;
+                        _scriptTypeDict.Add(_scriptHash, type);
                     }
                 }
                 return false;
@@ -247,9 +243,9 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
         #endregion
 
         #region Call script function
-        private DynamicScriptExecuteResult<T> CallFunction<T>(string functionName, params object[] parameters)
+        private DynamicScriptExecuteResult<T> CallFunction<T>(DynamicScript dynamicScript)
         {
-            if (functionName.IsNullOrEmpty())
+            if (dynamicScript.FunctionName.IsNullOrEmpty())
                 return DynamicScriptExecuteResult<T>.Error($"function name can not be null.");
 
             if (_scriptHash.IsNullOrEmpty() || !_scriptTypeDict.ContainsKey(_scriptHash))
@@ -257,20 +253,57 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
             var type = _scriptTypeDict[_scriptHash];
 
-            var methodInfo = type.Method(functionName);
+            var methodInfo = type.Method(dynamicScript.FunctionName);
 
             if (methodInfo == null)
                 return DynamicScriptExecuteResult<T>.Error($"function name can not be null.");
 
-            if (type.Method(functionName).IsStatic)
+            if (dynamicScript.IsTrustedScript)
             {
-                return DynamicScriptExecuteResult<T>.Success(data: ExecuteTrustedCodeStaticMethod<T>(type, methodInfo, functionName, parameters));
+                return ExecuteTrustedCode<T>(type, methodInfo, dynamicScript.Parameters);
             }
             else
             {
-                return DynamicScriptExecuteResult<T>.Success(data: ExecuteTrustedCodeMethod<T>(type, methodInfo, functionName, parameters));
+                if (dynamicScript.MillisecondsTimeout <= 0)
+                    return DynamicScriptExecuteResult<T>.Error("if execute untrusted code,please setting the milliseconds timeout!");
+
+                return ExecuteUntrustedCode<T>(type, methodInfo, dynamicScript.MillisecondsTimeout, dynamicScript.Parameters);
+            }
+        }
+        private DynamicScriptExecuteResult<T> ExecuteTrustedCode<T>(Type type, MethodInfo methodInfo, params object[] parameters)
+        {
+            object result = null;
+            var parms = methodInfo.GetParameters();
+
+            if (methodInfo.IsStatic)
+                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
+            else
+                result = Activator.CreateInstance(type).TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
+
+            return DynamicScriptExecuteResult<T>.Success(data: (T)result);
+        }
+        private DynamicScriptExecuteResult<T> ExecuteUntrustedCode<T>(Type type, MethodInfo methodInfo, int millisecondsTimeout, params object[] parameters)
+        {
+            string errorMessage = string.Format("[Assembly:{0},Method:{1},Timeout:{2}, execution timed out.", type.Assembly.FullName, methodInfo.Name, millisecondsTimeout);
+            DynamicScriptExecuteResult<T> result = DynamicScriptExecuteResult<T>.Error(errorMessage);
+
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
+
+            var t = Task.Factory.StartNew(() =>
+            {
+                result = ExecuteTrustedCode<T>(type, methodInfo, parameters);
+            }, token);
+
+            if (!t.Wait(millisecondsTimeout, token))
+            {
+                tokenSource.Cancel();
+                _logger.Error(errorMessage);
+                return DynamicScriptExecuteResult<T>.Error(errorMessage);
             }
 
+            return result;
+            //这里用不同的应用程序域重构，增强沙箱支持
             //Note:.NET Core 3.0 Preview 5 start support
             //暂时不支持沙箱环境
             //if (SettingsConfig.Instance.SandboxEnable)
@@ -281,19 +314,6 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             //    sandBoxer.UnloadSandBoxer();
             //    return (T)obj;
             //}
-        }
-        private T ExecuteTrustedCodeMethod<T>(Type type, MethodInfo methodInfo, string functionName, object[] parameters)
-        {
-            var obj = Activator.CreateInstance(type);
-            var parms = methodInfo.GetParameters();
-            var DynamicScriptExecuteResult = obj.TryCallMethod(functionName, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
-            return (T)DynamicScriptExecuteResult;
-        }
-        private T ExecuteTrustedCodeStaticMethod<T>(Type type, MethodInfo methodInfo, string functionName, object[] parameters)
-        {
-            var parms = methodInfo.GetParameters();
-            var DynamicScriptExecuteResult = type.TryCallMethod(functionName, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
-            return (T)DynamicScriptExecuteResult;
         }
         #endregion
     }

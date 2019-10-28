@@ -16,31 +16,40 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.CSharp;
             script.Script =
-@"
-        using System;
+            @"
+            using System;
 
-        public class Test
-        {
-            public int GetA(int a)
+            public class Test
             {
-                return a;
+                public int GetA(int a)
+                {
+                    return a;
+                }
             }
-        }
-        ";
+            ";
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
-            script.Parameters = new object[] { 111 };
+            script.Parameters = new object[] { 1 };
             //script.ExecutionStatistics = true;//可以输出执行耗时，内存占用
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            for (int i = 0; i < 10000; i++)
+
+            //结果相加
+            int sum = 0;
+            for (int i = 0; i <= 10000; i++)
             {
                 var result = scriptEngineProvider.Run<int>(script);
                 //Trace.WriteLine($"Execute{i} -> IsSuccess:{result.IsSuccess},Data={result.Data},Message={result.Message},TotalMemoryAllocated={result.TotalMemoryAllocated},ProcessorTime={result.ProcessorTime.TotalSeconds}");
+                if (result.IsSuccess)
+                {
+                    sum += result.Data;
+                }
             }
             stopwatch.Stop();
             var cos = stopwatch.ElapsedMilliseconds;
+
+            Assert.Equal(10000, sum);
         }
 
         [Fact]
@@ -54,17 +63,17 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             //先编译A执行A
             script.Script =
-@"
-        using System;
+            @"
+            using System;
 
-        public class Test
-        {
-            public int GetA(int a)
+            public class Test
             {
-                return a;
+                public int GetA(int a)
+                {
+                    return a;
+                }
             }
-        }
-        ";
+            ";
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };

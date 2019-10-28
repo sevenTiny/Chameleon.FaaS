@@ -1,4 +1,4 @@
-﻿//Note:.NET Core 3.0 Preview 5 start support
+﻿////Note:.NET Core 3.0 Preview 5 start support
 
 //using System;
 //using System.Collections.Generic;

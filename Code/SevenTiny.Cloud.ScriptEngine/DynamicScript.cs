@@ -37,6 +37,14 @@ namespace SevenTiny.Cloud.ScriptEngine
         /// 是否收集执行统计信息
         /// 默认False：统计非常耗时且会带来更多GC开销，正常运行过程请关闭！
         /// </summary>
-        public bool ExecutionStatistics { get; set; } = false;
+        public bool IsExecutionStatistics { get; set; } = false;
+        /// <summary>
+        /// 是否执行信任的脚本（默认是）
+        /// </summary>
+        public bool IsTrustedScript { get; set; } = true;
+        /// <summary>
+        /// 执行不信任的脚本的超时时间
+        /// </summary>
+        public int MillisecondsTimeout { get; set; }
     }
 }
