@@ -1,4 +1,4 @@
-# Seventiny.Cloud.FaaS
+# SevenTiny.Cloud.FaaS
 （Function as a Service）函数即服务框架是一组灵活，可靠，动态伸缩，沙箱化的脚本服务框架。借助该框架的能力，客户端无需关心业务脚本的运行环境，机器部署，服务扩容等基础设施。而将关注点聚焦在核心功能脚本的编写以及功能脚本的触发时机这两点上。
 
 （Function as a Service）The Function as a Service function is a flexible, reliable, dynamic, and sandboxed script service framework. With the capabilities of the framework, the client does not need to care about the operating environment of the business script, machine deployment, service expansion and other infrastructure. Focus on the writing of core function scripts and the timing of triggering function scripts.
