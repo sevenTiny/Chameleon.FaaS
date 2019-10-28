@@ -40,7 +40,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             int sum = 0;
             for (int i = 0; i <= 10000; i++)
             {
-                var result = scriptEngineProvider.Run<int>(script);
+                var result = scriptEngineProvider.Execute<int>(script);
                 //Trace.WriteLine($"Execute{i} -> IsSuccess:{result.IsSuccess},Data={result.Data},Message={result.Message},TotalMemoryAllocated={result.TotalMemoryAllocated},ProcessorTime={result.ProcessorTime.TotalSeconds}");
                 if (result.IsSuccess)
                 {
@@ -80,7 +80,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
 
-            var result1 = scriptEngineProvider.Run<int>(script);
+            var result1 = scriptEngineProvider.Execute<int>(script);
 
             //编译B执行B
             script.Script =
@@ -99,7 +99,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.FunctionName = "GetB";
             script.Parameters = new object[] { 99999999 };
 
-            var result2 = scriptEngineProvider.Run<int>(script);
+            var result2 = scriptEngineProvider.Execute<int>(script);
 
             //再执行A，这次是从B的脚本对应的Hash值去找Test类型，里面并没有A，所以报错没有找到方法A
             //也就是说，用B的脚本去调用A是错误的用法，即便类的名称是一样的，但其实不是一个类
@@ -107,7 +107,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 333 };
 
-            var result3 = scriptEngineProvider.Run<int>(script);
+            var result3 = scriptEngineProvider.Execute<int>(script);
         }
     }
 }

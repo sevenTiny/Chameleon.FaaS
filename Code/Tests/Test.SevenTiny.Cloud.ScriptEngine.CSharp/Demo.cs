@@ -32,7 +32,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
 
-            var result = scriptEngineProvider.Run<int>(script);
+            var result = scriptEngineProvider.Execute<int>(script);
 
             Assert.True(result.IsSuccess);
             Assert.Equal(111, result.Data);
@@ -70,7 +70,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.IsTrustedScript = false;     //是否受信任的脚本
             script.MillisecondsTimeout = 100;   //执行超时时间
 
-            var result = scriptEngineProvider.Run<int>(script);
+            var result = scriptEngineProvider.Execute<int>(script);
 
             Assert.True(result.IsSuccess);
             Assert.Equal(111, result.Data);

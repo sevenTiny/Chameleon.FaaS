@@ -49,7 +49,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             return BuildDynamicScript(dynamicScript, out string errorMsg) ? DynamicScriptExecuteResult.Success() : DynamicScriptExecuteResult.Error(errorMsg);
         }
 
-        public DynamicScriptExecuteResult<T> Run<T>(DynamicScript dynamicScript)
+        public DynamicScriptExecuteResult<T> Execute<T>(DynamicScript dynamicScript)
         {
             DynamicScriptPropertiesCheck(dynamicScript);
             return RunningDynamicScript<T>(dynamicScript);

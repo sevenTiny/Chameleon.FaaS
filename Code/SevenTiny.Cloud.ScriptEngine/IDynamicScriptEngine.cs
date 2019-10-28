@@ -10,7 +10,7 @@ namespace SevenTiny.Cloud.ScriptEngine
         /// <typeparam name="T"></typeparam>
         /// <param name="dynamicScript"></param>
         /// <returns></returns>
-        DynamicScriptExecuteResult<T> Run<T>(DynamicScript dynamicScript);
+        DynamicScriptExecuteResult<T> Execute<T>(DynamicScript dynamicScript);
         /// <summary>
         /// 校验脚本
         /// </summary>
