@@ -300,7 +300,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             {
                 tokenSource.Cancel();
                 _logger.Error(errorMessage);
-                return DynamicScriptExecuteResult<T>.Error(errorMessage);
+                return DynamicScriptExecuteResult<T>.Error("execution timed out!");
             }
 
             return result;

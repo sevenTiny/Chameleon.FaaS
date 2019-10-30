@@ -7,7 +7,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 {
     public class CSharpDynamicScriptEngineTest
     {
-        [Trait("desc","多次执行")]
+        [Trait("desc", "多次执行")]
         [Fact]
         public void MultiExecute()
         {
@@ -53,7 +53,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             Assert.Equal(10000, sum);
         }
 
-        [Trait("desc","执行同名不同类的不同方法")]
+        [Trait("desc", "执行同名不同类的不同方法")]
         [Fact]
         public void RepeatClassExecute()
         {
@@ -108,6 +108,39 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.Parameters = new object[] { 333 };
 
             var result3 = scriptEngineProvider.Execute<int>(script);
+        }
+
+        [Fact]
+        public void DeadCycile()
+        {
+            IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
+
+            DynamicScript script = new DynamicScript();
+            script.TenantId = 0;
+            script.Language = DynamicScriptLanguage.CSharp;
+            script.Script =
+            @"
+            using System;
+
+            public class Test
+            {
+                public int GetA(int a)
+                {
+                    for(;;){}
+                    return a;
+                }
+            }
+            ";
+            script.ClassFullName = "Test";
+            script.FunctionName = "GetA";
+            script.Parameters = new object[] { 111 };
+            script.IsTrustedScript = false;     //因为有死循环，所以非信任脚本测试，测试是否会超时
+            script.MillisecondsTimeout = 1000;
+
+            var result = scriptEngineProvider.Execute<int>(script);
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal("execution timed out!", result.Message);
         }
     }
 }
