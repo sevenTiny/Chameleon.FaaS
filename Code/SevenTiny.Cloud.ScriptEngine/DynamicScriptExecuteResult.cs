@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SevenTiny.Cloud.ScriptEngine
+﻿namespace SevenTiny.Cloud.ScriptEngine
 {
     public struct DynamicScriptExecuteResult
     {
@@ -24,7 +20,7 @@ namespace SevenTiny.Cloud.ScriptEngine
         public bool IsSuccess { get; private set; }
         public string Message { get; set; }
         public T Data { get; set; }
-        public TimeSpan ProcessorTime { get; set; }
+        public long ProcessorTime { get; set; }
         public long TotalMemoryAllocated { get; set; }
 
         public static DynamicScriptExecuteResult<T> Error(string message = null)

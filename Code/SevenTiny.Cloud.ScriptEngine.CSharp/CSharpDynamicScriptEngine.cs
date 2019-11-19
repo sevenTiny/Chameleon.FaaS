@@ -85,7 +85,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
                     stopwatch.Stop();
                     result.TotalMemoryAllocated = GC.GetTotalMemory(true) - startMemory;
-                    result.ProcessorTime = stopwatch.Elapsed;
+                    result.ProcessorTime = stopwatch.ElapsedMilliseconds;
                     return result;
                 }
 
