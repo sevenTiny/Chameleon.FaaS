@@ -11,8 +11,6 @@ namespace SevenTiny.Cloud.FaaS.GRpc
     {
         public override Task<DynamicScriptExecuteResult> Test(DynamicScript request, ServerCallContext context)
         {
-            Console.WriteLine("request:" + request.ClassFullName);
-
             return Task.FromResult(new DynamicScriptExecuteResult
             {
                 IsSuccess = true,

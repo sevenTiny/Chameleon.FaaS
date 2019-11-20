@@ -32,6 +32,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<DynamicScriptExecutorService>();
 
                 endpoints.MapGet("/", async context =>
                 {

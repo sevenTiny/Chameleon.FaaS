@@ -14,7 +14,7 @@ message Empty{
 }
 
 enum DynamicScriptLanguage {
-        CSharp = 0;
+	CSharp = 0;
 }
 
 message DynamicScript {
