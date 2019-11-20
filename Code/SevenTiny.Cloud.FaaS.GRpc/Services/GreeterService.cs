@@ -17,6 +17,8 @@ namespace SevenTiny.Cloud.FaaS.GRpc
 
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
         {
+            Console.WriteLine("request:" + request.Name);
+
             return Task.FromResult(new HelloReply
             {
                 Message = "Hello " + request.Name

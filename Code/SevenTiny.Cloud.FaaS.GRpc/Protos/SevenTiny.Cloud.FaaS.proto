@@ -1,12 +1,21 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 option csharp_namespace = "SevenTiny.Cloud.FaaS.GRpc";
 
-package ScriptService;
+package SevenTiny.Cloud.FaaS;
+
+// 动态脚本执行器
+service DynamicScriptExecutor {
+  rpc Test (DynamicScript) returns (DynamicScriptExecuteResult);
+}
+
+message Empty{
+
+}
 
 enum DynamicScriptLanguage {
         CSharp = 0;
-    }
+}
 
 message DynamicScript {
     int32 TenantId = 1;

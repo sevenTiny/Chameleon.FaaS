@@ -1,0 +1,39 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "SevenTiny.Cloud.FaaS.GRpc";
+
+package SevenTiny.Cloud.FaaS;
+
+// 动态脚本执行器
+service DynamicScriptExecutor {
+  rpc Test (DynamicScript) returns (DynamicScriptExecuteResult);
+}
+
+message Empty{
+
+}
+
+enum DynamicScriptLanguage {
+        CSharp = 0;
+}
+
+message DynamicScript {
+    int32 TenantId = 1;
+    string Script = 2;
+    string ClassFullName = 3;
+    string FunctionName = 4;
+    bytes Parameters = 5;
+    DynamicScriptLanguage Language = 6;
+    bool IsExecutionStatistics = 7;
+    bool IsTrustedScript = 8;
+    int32 MillisecondsTimeout = 9;
+}
+
+// The response message containing the greetings.
+message DynamicScriptExecuteResult {
+	bool IsSuccess = 1;
+    string Message = 2;
+    bytes Data = 3;
+    int64 ProcessorTime = 4;
+    int64 TotalMemoryAllocated = 5;
+}
