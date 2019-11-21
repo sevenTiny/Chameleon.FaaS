@@ -42,16 +42,5 @@ namespace Test.SevenTiny.Cloud.FaaS.GRpc
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ElapsedMilliseconds / 1000);
         }
-
-        [Fact]
-        public void Test2()
-        {
-            var channel = GrpcChannel.ForAddress("https://localhost:5001");
-            var client = new Greeter.GreeterClient(channel);
-            var reply = client.SayHello(new HelloRequest
-            {
-                Name = "7tiny"
-            });
-        }
     }
 }

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\greet.proto" />
     <None Remove="Protos\SevenTiny.Cloud.FaaS.proto" />
   </ItemGroup>
 
@@ -25,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\SevenTiny.Cloud.FaaS.proto" GrpcServices="Client" />
   </ItemGroup>
 

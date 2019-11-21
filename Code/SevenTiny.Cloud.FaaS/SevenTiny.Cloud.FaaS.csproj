@@ -23,4 +23,8 @@
     <PackageReference Include="SevenTiny.Bantina.Configuration.MySql" Version="1.0.21" />
     <PackageReference Include="SevenTiny.Bantina.Logging" Version="1.0.22" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SevenTiny.Cloud.ScriptEngine.CSharp\SevenTiny.Cloud.ScriptEngine.CSharp.csproj" />
+  </ItemGroup>
 </Project>

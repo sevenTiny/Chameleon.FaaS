@@ -6,7 +6,8 @@ package SevenTiny.Cloud.FaaS;
 
 // 动态脚本执行器
 service DynamicScriptExecutor {
-  rpc Test (DynamicScript) returns (DynamicScriptExecuteResult);
+	rpc CheckScript (DynamicScript) returns (DynamicScriptExecuteResult);
+	rpc Execute (DynamicScript) returns (DynamicScriptExecuteResult);
 }
 
 message Empty{
