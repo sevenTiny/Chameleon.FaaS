@@ -11,7 +11,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc.Helpers
             switch (dynamicScriptLanguage)
             {
                 case DynamicScriptLanguage.Csharp:
-                    return ScriptEngine.DynamicScriptLanguage.CSharp;
+                    return ScriptEngine.DynamicScriptLanguage.Csharp;
                 default:
                     throw new InvalidCastException("no mapping item with type DynamicScriptLanguage");
             }
@@ -28,7 +28,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc.Helpers
                 IsTrustedScript = dynamicScript.IsTrustedScript,
                 Language = dynamicScript.Language.ToScriptEngineDynamicScriptLanguage(),
                 MillisecondsTimeout = dynamicScript.MillisecondsTimeout,
-                Parameters = JsonSerializer.Deserialize<object[]>(dynamicScript.Parameters.Span),
+                Parameters = Newtonsoft.Json.JsonConvert.DeserializeObject<object[]>(dynamicScript.Parameters),
                 TenantId = dynamicScript.TenantId
             };
         }
@@ -38,8 +38,8 @@ namespace SevenTiny.Cloud.FaaS.GRpc.Helpers
             return new DynamicScriptExecuteResult
             {
                 IsSuccess = executeResult.IsSuccess,
-                Message = executeResult.Message,
-                Data = ByteString.CopyFrom(JsonSerializer.SerializeToUtf8Bytes(executeResult.Data)),
+                Message = executeResult.Message ?? string.Empty,
+                Data = executeResult.Data == null ? string.Empty : Newtonsoft.Json.JsonConvert.SerializeObject(executeResult.Data),
                 ProcessorTime = executeResult.ProcessorTime,
                 TotalMemoryAllocated = executeResult.TotalMemoryAllocated
             };

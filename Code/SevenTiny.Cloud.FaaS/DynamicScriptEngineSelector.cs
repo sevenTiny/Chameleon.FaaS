@@ -15,7 +15,7 @@ namespace SevenTiny.Cloud.FaaS
         {
             _scriptEngineCache = new Dictionary<DynamicScriptLanguage, IDynamicScriptEngine>();
             //add dynamic script engine of each language
-            _scriptEngineCache.Add(DynamicScriptLanguage.CSharp, new CSharpDynamicScriptEngine());
+            _scriptEngineCache.Add(DynamicScriptLanguage.Csharp, new CSharpDynamicScriptEngine());
         }
 
         public static IDynamicScriptEngine GetScriptEngine(DynamicScriptLanguage dynamicScriptLanguage)

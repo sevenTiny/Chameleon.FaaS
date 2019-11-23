@@ -15,7 +15,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
-            script.Language = DynamicScriptLanguage.CSharp;
+            script.Language = DynamicScriptLanguage.Csharp;
             script.Script =
             @"
             using System;
@@ -31,6 +31,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
+            script.IsTrustedScript = true;
 
             var result = scriptEngineProvider.Execute<int>(script);
 
@@ -46,7 +47,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
-            script.Language = DynamicScriptLanguage.CSharp;
+            script.Language = DynamicScriptLanguage.Csharp;
             script.Script =
             @"
             using System;

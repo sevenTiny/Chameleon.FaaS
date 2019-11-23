@@ -148,7 +148,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         private string GetScriptKeyHash(string script)
         {
-            return String.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.CSharp, _tenantId, _currentAppName, MD5Helper.GetMd5Hash(script));
+            return String.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.Csharp, _tenantId, _currentAppName, MD5Helper.GetMd5Hash(script));
         }
 
         #region Build and Create Assembly and output files
@@ -275,11 +275,12 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
         {
             object result = null;
             var parms = methodInfo.GetParameters();
+            var safeParameters = SafeTypeConvertParameters(methodInfo.Name, parms, parameters);
 
             if (methodInfo.IsStatic)
-                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
+                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(),safeParameters );
             else
-                result = Activator.CreateInstance(type).TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), parameters);
+                result = Activator.CreateInstance(type).TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), safeParameters);
 
             return DynamicScriptExecuteResult<T>.Success(data: (T)result);
         }
@@ -315,6 +316,24 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             //    sandBoxer.UnloadSandBoxer();
             //    return (T)obj;
             //}
+        }
+
+        private object[] SafeTypeConvertParameters(string method, ParameterInfo[] parameterInfos, object[] parameters)
+        {
+            Ensure.ArgumentNotNullOrEmpty(parameterInfos, nameof(parameterInfos));
+            Ensure.ArgumentNotNullOrEmpty(parameters, nameof(parameters));
+
+            if (parameterInfos.Length != parameters.Length)
+                throw new ArgumentException(nameof(parameters), $"The number of parameters of {method} a does not match.");
+
+            object[] result = new object[parameters.Length];
+
+            for (int i = 0; i < parameterInfos.Length; i++)
+            {
+                result[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
+            }
+
+            return result;
         }
         #endregion
     }

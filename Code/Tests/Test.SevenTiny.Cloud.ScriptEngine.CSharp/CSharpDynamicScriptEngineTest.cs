@@ -15,7 +15,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
-            script.Language = DynamicScriptLanguage.CSharp;
+            script.Language = DynamicScriptLanguage.Csharp;
             script.Script =
             @"
             using System;
@@ -61,7 +61,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
-            script.Language = DynamicScriptLanguage.CSharp;
+            script.Language = DynamicScriptLanguage.Csharp;
 
             //œ»±‡“ÎA÷¥––A
             script.Script =
@@ -117,7 +117,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             DynamicScript script = new DynamicScript();
             script.TenantId = 0;
-            script.Language = DynamicScriptLanguage.CSharp;
+            script.Language = DynamicScriptLanguage.Csharp;
             script.Script =
             @"
             using System;

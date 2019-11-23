@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SevenTiny.Bantina.Logging;
 
 namespace SevenTiny.Cloud.FaaS.GRpc
 {
@@ -15,6 +16,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc
             services.AddGrpc();
 
             services.AddSingleton<IDynamicScriptExecuteService, DynamicScriptExecuteService>();
+            services.AddSingleton<ILog, LogManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

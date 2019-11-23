@@ -1,6 +1,8 @@
 ﻿using Grpc.Core;
+using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Validation;
 using SevenTiny.Cloud.FaaS.GRpc.Helpers;
+using System;
 using System.Threading.Tasks;
 
 namespace SevenTiny.Cloud.FaaS.GRpc
@@ -8,16 +10,21 @@ namespace SevenTiny.Cloud.FaaS.GRpc
     public class DynamicScriptExecutorService : DynamicScriptExecutor.DynamicScriptExecutorBase
     {
         private IDynamicScriptExecuteService _dynamicScriptExecutorService;
-        public DynamicScriptExecutorService(IDynamicScriptExecuteService dynamicScriptExecutorService)
+        private ILog _logger;
+
+        public DynamicScriptExecutorService(IDynamicScriptExecuteService dynamicScriptExecutorService, ILog logger)
         {
             _dynamicScriptExecutorService = dynamicScriptExecutorService;
+            _logger = logger;
         }
 
         private void CheckRequiredArguments(DynamicScript request)
         {
-            Ensure.ArgumentNotNullOrEmpty(request.ClassFullName, nameof(request.ClassFullName));
-            Ensure.ArgumentNotNullOrEmpty(request.FunctionName, nameof(request.FunctionName));
-            Ensure.ArgumentNotNullOrEmpty(request.Script, nameof(request.Script));
+            Ensure.ArgumentNotNullOrEmpty(request.ClassFullName, "ClassFullName");
+            Ensure.ArgumentNotNullOrEmpty(request.FunctionName, "FunctionName");
+            Ensure.ArgumentNotNullOrEmpty(request.Script, "Script");
+            if (request.Language <= 0)
+                throw new ArgumentException("Language must be provide");
         }
 
         public override Task<DynamicScriptExecuteResult> CheckScript(DynamicScript request, ServerCallContext context)
@@ -27,9 +34,10 @@ namespace SevenTiny.Cloud.FaaS.GRpc
                 CheckRequiredArguments(request);
                 return Task.FromResult(_dynamicScriptExecutorService.CheckScript(request.ToScriptEngineDynamicScript()).ToGRpcDynamicScriptExecuteResult());
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                return Task.FromResult(new DynamicScriptExecuteResult { IsSuccess = false, Message = ex.ToString() });
+                _logger.Error(ex);
+                return Task.FromResult(new DynamicScriptExecuteResult { IsSuccess = false, Message = ex.InnerException?.ToString() ?? ex.ToString() });
             }
         }
 
@@ -40,9 +48,10 @@ namespace SevenTiny.Cloud.FaaS.GRpc
                 CheckRequiredArguments(request);
                 return Task.FromResult(_dynamicScriptExecutorService.Execute(request.ToScriptEngineDynamicScript()).ToGRpcDynamicScriptExecuteResult());
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                return Task.FromResult(new DynamicScriptExecuteResult { IsSuccess = false, Message = ex.ToString() });
+                _logger.Error(ex);
+                return Task.FromResult(new DynamicScriptExecuteResult { IsSuccess = false, Message = ex.InnerException?.ToString() ?? ex.ToString() });
             }
         }
     }
