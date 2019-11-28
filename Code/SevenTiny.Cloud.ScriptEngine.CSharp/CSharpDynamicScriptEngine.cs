@@ -1,6 +1,7 @@
 ﻿using Fasterflect;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
@@ -45,22 +46,66 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         public DynamicScriptExecuteResult CheckScript(DynamicScript dynamicScript)
         {
-            DynamicScriptPropertiesCheck(dynamicScript);
+            ArgumentsCheck(dynamicScript);
+            PreProcessing(dynamicScript);
             return BuildDynamicScript(dynamicScript, out string errorMsg) ? DynamicScriptExecuteResult.Success() : DynamicScriptExecuteResult.Error(errorMsg);
         }
 
         public DynamicScriptExecuteResult<T> Execute<T>(DynamicScript dynamicScript)
         {
-            DynamicScriptPropertiesCheck(dynamicScript);
+            ArgumentsCheck(dynamicScript);
+            PreProcessing(dynamicScript);
             return RunningDynamicScript<T>(dynamicScript);
         }
 
-        private void DynamicScriptPropertiesCheck(DynamicScript dynamicScript)
+        public DynamicScriptIntellisenseResult Intellisense(IntellisenseDynamicScript intellisenseDynamicScript)
         {
-            _tenantId = dynamicScript.TenantId;
+            intellisenseDynamicScript.Script.CheckNullOrEmpty("script can not be null.");
+
+            PreProcessing(new DynamicScript { TenantId = intellisenseDynamicScript.TenantId, Script = intellisenseDynamicScript.Script });
+
+            var syntaxTree = GetSyntaxTree(intellisenseDynamicScript.Script);
+
+            throw new NotImplementedException();
+        }
+
+        public SyntaxNode GetRoot(string code)
+        {
+            var tree = CSharpSyntaxTree.ParseText(code);
+            //SyntaxTree的根root
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+            //member
+            var firstmember = root.Members[0];
+            //命名空间Namespace
+            //var helloWorldDeclaration = (NamespaceDeclarationSyntax)firstmember;
+            //类 class
+            var programDeclaration = (ClassDeclarationSyntax)firstmember;
+            //方法 Method
+            var mainDeclaration = (MethodDeclarationSyntax)programDeclaration.Members[0];
+            //参数 Parameter
+            var argsParameter = mainDeclaration.ParameterList.Parameters[0];
+
+            //查询方法，查询方法名称为Main的第一个参数。
+            var firstParameters = from methodDeclaration in root.DescendantNodes()
+                                                    .OfType<MethodDeclarationSyntax>()
+                                  where methodDeclaration.Identifier.ValueText == "GetA"
+                                  select methodDeclaration.ParameterList.Parameters.First();
+
+            var argsParameter2 = firstParameters.Single();
+            return root;
+        }
+
+        private void ArgumentsCheck(DynamicScript dynamicScript)
+        {
             dynamicScript.Script.CheckNullOrEmpty("script can not be null.");
             dynamicScript.ClassFullName.CheckNullOrEmpty("classFullName cannot be null.");
             dynamicScript.FunctionName.CheckNullOrEmpty("FunctionName can not be null.");
+        }
+
+        private void PreProcessing(DynamicScript dynamicScript)
+        {
+            _tenantId = dynamicScript.TenantId;
+            _scriptHash = GetScriptKeyHash(dynamicScript.Script);
         }
 
         private DynamicScriptExecuteResult<T> RunningDynamicScript<T>(DynamicScript dynamicScript)
@@ -110,8 +155,6 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         private bool BuildDynamicScript(DynamicScript dynamicScript, out string errorMessage)
         {
-            _scriptHash = GetScriptKeyHash(dynamicScript.Script);
-
             errorMessage = string.Empty;
             try
             {
@@ -148,10 +191,10 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         private string GetScriptKeyHash(string script)
         {
-            return String.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.Csharp, _tenantId, _currentAppName, MD5Helper.GetMd5Hash(script));
+            return _scriptHash = string.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.Csharp, _tenantId, _currentAppName, MD5Helper.GetMd5Hash(script));
         }
 
-        #region Build and Create Assembly and output files
+        #region Build and Create Assembly
         /// <summary>
         /// Create Assembly whick will run
         /// </summary>
@@ -161,14 +204,13 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
         private Assembly CreateAsmExecutor(string script, out string errorMsg)
         {
             errorMsg = null;
-            var assemblyName = _scriptHash;
 
-            var sourceTree = CSharpSyntaxTree.ParseText(script, path: assemblyName + ".cs", encoding: Encoding.UTF8);
+            var assemblyName = _scriptHash;
 
             var references = CSharpReferenceManager.GetMetaDataReferences()[_currentAppName];
 
             var compilation = CSharpCompilation.Create(assemblyName,
-                new[] { sourceTree }, references,
+                new[] { GetSyntaxTree(script) }, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(FaaSSettingsConfigHelper.IsDebugMode() ? OptimizationLevel.Debug : OptimizationLevel.Release));
 
             Assembly assembly = null;
@@ -203,6 +245,10 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             }
             _logger.Debug($"CreateAsmExecutor -> _context:{_tenantId},{"CSharp"}, {_currentAppName},{_scriptHash} _scriptTypeDict:{_scriptTypeDict?.Count} _metadataReferences:{ CSharpReferenceManager.GetMetaDataReferences()[_currentAppName]?.Count}");
             return assembly;
+        }
+        private SyntaxTree GetSyntaxTree(string script)
+        {
+            return CSharpSyntaxTree.ParseText(script, path: _scriptHash + ".cs", encoding: Encoding.UTF8);
         }
         private void OutputDynamicScriptAllFile(string script, string assemblyName, byte[] assemblyBytes, byte[] pdbBytes)
         {
@@ -278,7 +324,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             var safeParameters = SafeTypeConvertParameters(methodInfo.Name, parms, parameters);
 
             if (methodInfo.IsStatic)
-                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(),safeParameters );
+                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), safeParameters);
             else
                 result = Activator.CreateInstance(type).TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), safeParameters);
 

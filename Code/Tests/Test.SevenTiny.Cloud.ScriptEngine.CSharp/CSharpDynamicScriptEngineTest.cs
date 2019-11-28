@@ -110,6 +110,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             var result3 = scriptEngineProvider.Execute<int>(script);
         }
 
+        [Trait("desc", "死循环测试")]
         [Fact]
         public void DeadCycile()
         {
@@ -141,6 +142,58 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             Assert.False(result.IsSuccess);
             Assert.Equal("execution timed out!", result.Message);
+        }
+
+        [Trait("desc", "智能提示测试")]
+        [Fact]
+        public void Intellisense()
+        {
+            IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
+
+            IntellisenseDynamicScript script = new IntellisenseDynamicScript();
+            script.TenantId = 0;
+            script.Language = DynamicScriptLanguage.Csharp;
+            script.Script =
+            @"
+            using System;
+
+            public class Test
+            {
+                public int GetA(int a)
+                {
+                    string.
+                    return a;
+                }
+            }
+            ";
+            script.ClassFullName = "Test";
+            script.FunctionName = "GetA";
+
+            var result = scriptEngineProvider.Intellisense(script);
+
+            Assert.False(result.IsSuccess);
+        }
+
+        [Trait("desc", "智能提示测试")]
+        [Fact]
+        public void GetRoot()
+        {
+            CSharpDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
+
+            var script =
+                @"
+            using System;
+
+            public class Test
+            {
+                public int GetA(int a)
+                {
+                    string.
+                    return a;
+                }
+            }
+            ";
+            var result = scriptEngineProvider.GetRoot(script);
         }
     }
 }

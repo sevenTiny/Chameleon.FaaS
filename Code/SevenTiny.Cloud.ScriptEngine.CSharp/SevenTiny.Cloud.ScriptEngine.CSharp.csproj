@@ -8,4 +8,8 @@
     <ProjectReference Include="..\SevenTiny.Cloud.ScriptEngine\SevenTiny.Cloud.ScriptEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CodeSyntax\" />
+  </ItemGroup>
+
 </Project>

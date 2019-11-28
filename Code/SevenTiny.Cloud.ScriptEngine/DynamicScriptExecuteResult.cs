@@ -2,7 +2,13 @@
 {
     public struct DynamicScriptExecuteResult
     {
+        /// <summary>
+        /// 是否执行成功
+        /// </summary>
         public bool IsSuccess { get; private set; }
+        /// <summary>
+        /// 执行消息
+        /// </summary>
         public string Message { get; set; }
 
         public static DynamicScriptExecuteResult Error(string message = null)
@@ -17,10 +23,25 @@
 
     public struct DynamicScriptExecuteResult<T>
     {
+        /// <summary>
+        /// 是否执行成功
+        /// </summary>
         public bool IsSuccess { get; private set; }
+        /// <summary>
+        /// 执行信息
+        /// </summary>
         public string Message { get; set; }
+        /// <summary>
+        /// 返回结果
+        /// </summary>
         public T Data { get; set; }
+        /// <summary>
+        /// 执行耗时
+        /// </summary>
         public long ProcessorTime { get; set; }
+        /// <summary>
+        /// 内存占用
+        /// </summary>
         public long TotalMemoryAllocated { get; set; }
 
         public static DynamicScriptExecuteResult<T> Error(string message = null)
