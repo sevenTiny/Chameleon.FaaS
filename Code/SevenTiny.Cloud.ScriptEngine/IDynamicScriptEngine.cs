@@ -15,11 +15,5 @@
         /// <param name="dynamicScript">动态脚本</param>
         /// <returns></returns>
         DynamicScriptExecuteResult CheckScript(DynamicScript dynamicScript);
-        /// <summary>
-        /// 智能提示
-        /// </summary>
-        /// <param name="intellisenseDynamicScript">动态脚本分析</param>
-        /// <returns></returns>
-        DynamicScriptIntellisenseResult Intellisense(IntellisenseDynamicScript intellisenseDynamicScript);
     }
 }

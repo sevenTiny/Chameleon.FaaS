@@ -1,5 +1,6 @@
 using SevenTiny.Cloud.ScriptEngine;
 using SevenTiny.Cloud.ScriptEngine.CSharp;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
 
@@ -38,7 +39,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             //结果相加
             int sum = 0;
-            for (int i = 0; i <= 10000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 var result = scriptEngineProvider.Execute<int>(script);
                 //Trace.WriteLine($"Execute{i} -> IsSuccess:{result.IsSuccess},Data={result.Data},Message={result.Message},TotalMemoryAllocated={result.TotalMemoryAllocated},ProcessorTime={result.ProcessorTime.TotalSeconds}");
@@ -144,56 +145,59 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             Assert.Equal("execution timed out!", result.Message);
         }
 
-        [Trait("desc", "智能提示测试")]
+        [Trait("desc", "引用类型参数测试")]
         [Fact]
-        public void Intellisense()
+        public void ReferenceArguments()
         {
             IDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
 
-            IntellisenseDynamicScript script = new IntellisenseDynamicScript();
+            DynamicScript script = new DynamicScript();
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.Csharp;
             script.Script =
             @"
             using System;
+            using System.Collections.Generic;
 
             public class Test
             {
-                public int GetA(int a)
+                public List<int> GetA(List<int> a)
                 {
-                    string.
+                    a[0] = 3;
                     return a;
                 }
             }
             ";
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
+            script.Parameters = new object[] { new List<int> { 1, 2 } };
 
-            var result = scriptEngineProvider.Intellisense(script);
+            var result = scriptEngineProvider.Execute<object>(script);
 
-            Assert.False(result.IsSuccess);
-        }
-
-        [Trait("desc", "智能提示测试")]
-        [Fact]
-        public void GetRoot()
-        {
-            CSharpDynamicScriptEngine scriptEngineProvider = new CSharpDynamicScriptEngine();
-
-            var script =
-                @"
+            DynamicScript script2 = new DynamicScript();
+            script2.TenantId = 0;
+            script2.Language = DynamicScriptLanguage.Csharp;
+            script2.Script =
+            @"
             using System;
+            using System.Collections.Generic;
 
             public class Test
             {
-                public int GetA(int a)
+                public List<int> GetA(List<int> a)
                 {
-                    string.
                     return a;
                 }
             }
             ";
-            var result = scriptEngineProvider.GetRoot(script);
+            script2.ClassFullName = "Test";
+            script2.FunctionName = "GetA";
+            script2.Parameters = script.Parameters;
+
+            var result2 = scriptEngineProvider.Execute<List<int>>(script2);
+
+            Assert.Equal(3, result2.Data[0]);
+            Assert.Equal(3, (script.Parameters[0] as List<int>)[0]);
         }
     }
 }

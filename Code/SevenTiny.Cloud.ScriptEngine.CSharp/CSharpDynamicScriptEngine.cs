@@ -58,48 +58,14 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             return RunningDynamicScript<T>(dynamicScript);
         }
 
-        public DynamicScriptIntellisenseResult Intellisense(IntellisenseDynamicScript intellisenseDynamicScript)
-        {
-            intellisenseDynamicScript.Script.CheckNullOrEmpty("script can not be null.");
-
-            PreProcessing(new DynamicScript { TenantId = intellisenseDynamicScript.TenantId, Script = intellisenseDynamicScript.Script });
-
-            var syntaxTree = GetSyntaxTree(intellisenseDynamicScript.Script);
-
-            throw new NotImplementedException();
-        }
-
-        public SyntaxNode GetRoot(string code)
-        {
-            var tree = CSharpSyntaxTree.ParseText(code);
-            //SyntaxTree的根root
-            var root = (CompilationUnitSyntax)tree.GetRoot();
-            //member
-            var firstmember = root.Members[0];
-            //命名空间Namespace
-            //var helloWorldDeclaration = (NamespaceDeclarationSyntax)firstmember;
-            //类 class
-            var programDeclaration = (ClassDeclarationSyntax)firstmember;
-            //方法 Method
-            var mainDeclaration = (MethodDeclarationSyntax)programDeclaration.Members[0];
-            //参数 Parameter
-            var argsParameter = mainDeclaration.ParameterList.Parameters[0];
-
-            //查询方法，查询方法名称为Main的第一个参数。
-            var firstParameters = from methodDeclaration in root.DescendantNodes()
-                                                    .OfType<MethodDeclarationSyntax>()
-                                  where methodDeclaration.Identifier.ValueText == "GetA"
-                                  select methodDeclaration.ParameterList.Parameters.First();
-
-            var argsParameter2 = firstParameters.Single();
-            return root;
-        }
-
         private void ArgumentsCheck(DynamicScript dynamicScript)
         {
             dynamicScript.Script.CheckNullOrEmpty("script can not be null.");
             dynamicScript.ClassFullName.CheckNullOrEmpty("classFullName cannot be null.");
             dynamicScript.FunctionName.CheckNullOrEmpty("FunctionName can not be null.");
+
+            if (!dynamicScript.IsTrustedScript && dynamicScript.MillisecondsTimeout <= 0)
+                throw new ArgumentException("if execute untrusted code,please setting the milliseconds timeout!", "dynamicScript.MillisecondsTimeout");
         }
 
         private void PreProcessing(DynamicScript dynamicScript)
