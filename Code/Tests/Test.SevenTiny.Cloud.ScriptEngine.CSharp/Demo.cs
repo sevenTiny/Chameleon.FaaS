@@ -7,7 +7,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 {
     public class Demo
     {
-        [Trait("desc","执行受信任的脚本 execute trasted code")]
+        [Trait("desc", "执行受信任的脚本 execute trasted code")]
         [Fact]
         public void Execute()
         {
@@ -39,7 +39,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             Assert.Equal(111, result.Data);
         }
 
-        [Trait("desc","执行不受信任的脚本 execute untrasted code")]
+        [Trait("desc", "执行不受信任的脚本 execute untrasted code")]
         [Fact]
         public void ExecuteUntrastedCode()
         {
@@ -57,9 +57,9 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
                 public int GetC(int a)
                 {
                     int c = 0;
-                    for(int b = 1; b < 100000000; b++)
+                    for(; ; )
                     {
-                           c += b * a;
+                           c += 1;
                     }
                     return c;
                 }
@@ -73,8 +73,8 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             var result = scriptEngineProvider.Execute<int>(script);
 
-            Assert.True(result.IsSuccess);
-            Assert.Equal(111, result.Data);
+            Assert.False(result.IsSuccess);
+            Assert.Equal("execution timed out!", result.Message);
         }
     }
 }

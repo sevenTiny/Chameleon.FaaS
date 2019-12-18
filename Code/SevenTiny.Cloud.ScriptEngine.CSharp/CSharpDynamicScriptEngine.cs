@@ -1,6 +1,7 @@
 ﻿using Fasterflect;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
@@ -45,22 +46,32 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         public DynamicScriptExecuteResult CheckScript(DynamicScript dynamicScript)
         {
-            DynamicScriptPropertiesCheck(dynamicScript);
+            ArgumentsCheck(dynamicScript);
+            PreProcessing(dynamicScript);
             return BuildDynamicScript(dynamicScript, out string errorMsg) ? DynamicScriptExecuteResult.Success() : DynamicScriptExecuteResult.Error(errorMsg);
         }
 
         public DynamicScriptExecuteResult<T> Execute<T>(DynamicScript dynamicScript)
         {
-            DynamicScriptPropertiesCheck(dynamicScript);
+            ArgumentsCheck(dynamicScript);
+            PreProcessing(dynamicScript);
             return RunningDynamicScript<T>(dynamicScript);
         }
 
-        private void DynamicScriptPropertiesCheck(DynamicScript dynamicScript)
+        private void ArgumentsCheck(DynamicScript dynamicScript)
         {
-            _tenantId = dynamicScript.TenantId;
             dynamicScript.Script.CheckNullOrEmpty("script can not be null.");
             dynamicScript.ClassFullName.CheckNullOrEmpty("classFullName cannot be null.");
             dynamicScript.FunctionName.CheckNullOrEmpty("FunctionName can not be null.");
+
+            if (!dynamicScript.IsTrustedScript && dynamicScript.MillisecondsTimeout <= 0)
+                throw new ArgumentException("if execute untrusted code,please setting the milliseconds timeout!", "dynamicScript.MillisecondsTimeout");
+        }
+
+        private void PreProcessing(DynamicScript dynamicScript)
+        {
+            _tenantId = dynamicScript.TenantId;
+            _scriptHash = GetScriptKeyHash(dynamicScript.Script);
         }
 
         private DynamicScriptExecuteResult<T> RunningDynamicScript<T>(DynamicScript dynamicScript)
@@ -110,8 +121,6 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         private bool BuildDynamicScript(DynamicScript dynamicScript, out string errorMessage)
         {
-            _scriptHash = GetScriptKeyHash(dynamicScript.Script);
-
             errorMessage = string.Empty;
             try
             {
@@ -148,10 +157,10 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
         private string GetScriptKeyHash(string script)
         {
-            return String.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.Csharp, _tenantId, _currentAppName, MD5Helper.GetMd5Hash(script));
+            return _scriptHash = string.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.Csharp, _tenantId, _currentAppName, MD5Helper.GetMd5Hash(script));
         }
 
-        #region Build and Create Assembly and output files
+        #region Build and Create Assembly
         /// <summary>
         /// Create Assembly whick will run
         /// </summary>
@@ -161,14 +170,13 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
         private Assembly CreateAsmExecutor(string script, out string errorMsg)
         {
             errorMsg = null;
-            var assemblyName = _scriptHash;
 
-            var sourceTree = CSharpSyntaxTree.ParseText(script, path: assemblyName + ".cs", encoding: Encoding.UTF8);
+            var assemblyName = _scriptHash;
 
             var references = CSharpReferenceManager.GetMetaDataReferences()[_currentAppName];
 
             var compilation = CSharpCompilation.Create(assemblyName,
-                new[] { sourceTree }, references,
+                new[] { GetSyntaxTree(script) }, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOptimizationLevel(FaaSSettingsConfigHelper.IsDebugMode() ? OptimizationLevel.Debug : OptimizationLevel.Release));
 
             Assembly assembly = null;
@@ -203,6 +211,10 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             }
             _logger.Debug($"CreateAsmExecutor -> _context:{_tenantId},{"CSharp"}, {_currentAppName},{_scriptHash} _scriptTypeDict:{_scriptTypeDict?.Count} _metadataReferences:{ CSharpReferenceManager.GetMetaDataReferences()[_currentAppName]?.Count}");
             return assembly;
+        }
+        private SyntaxTree GetSyntaxTree(string script)
+        {
+            return CSharpSyntaxTree.ParseText(script, path: _scriptHash + ".cs", encoding: Encoding.UTF8);
         }
         private void OutputDynamicScriptAllFile(string script, string assemblyName, byte[] assemblyBytes, byte[] pdbBytes)
         {
@@ -278,7 +290,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             var safeParameters = SafeTypeConvertParameters(methodInfo.Name, parms, parameters);
 
             if (methodInfo.IsStatic)
-                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(),safeParameters );
+                result = type.TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), safeParameters);
             else
                 result = Activator.CreateInstance(type).TryCallMethod(methodInfo.Name, true, parms.Select(t => t.Name).ToArray(), parms.Select(t => t.ParameterType).ToArray(), safeParameters);
 
