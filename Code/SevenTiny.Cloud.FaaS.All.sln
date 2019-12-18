@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SevenTiny.Cloud.Script
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SevenTiny.Cloud.ScriptEngine.Python", "Tests\Test.SevenTiny.Cloud.ScriptEngine.Python\Test.SevenTiny.Cloud.ScriptEngine.Python.csproj", "{5E5073EF-A3FA-4474-B844-811B41A556AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.SevenTiny.Cloud.FaaS.GRpc", "Tests\Test.SevenTiny.Cloud.FaaS.GRpc\Test.SevenTiny.Cloud.FaaS.GRpc.csproj", "{25856EDD-E5D8-41D1-91F2-A5EE672226DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SevenTiny.Cloud.FaaS.GRpc", "Tests\Test.SevenTiny.Cloud.FaaS.GRpc\Test.SevenTiny.Cloud.FaaS.GRpc.csproj", "{25856EDD-E5D8-41D1-91F2-A5EE672226DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

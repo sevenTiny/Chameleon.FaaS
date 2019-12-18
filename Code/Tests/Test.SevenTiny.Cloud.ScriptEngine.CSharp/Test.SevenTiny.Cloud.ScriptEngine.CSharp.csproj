@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SevenTiny.Cloud.ScriptEngine.CSharp\SevenTiny.Cloud.ScriptEngine.CSharp.csproj" />
-    <ProjectReference Include="..\..\SevenTiny.Cloud.ScriptEngine\SevenTiny.Cloud.ScriptEngine.csproj" />
   </ItemGroup>
 
 </Project>
