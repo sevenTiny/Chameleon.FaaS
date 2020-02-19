@@ -1,4 +1,4 @@
-using SevenTiny.Cloud.ScriptEngine;
+ï»¿using SevenTiny.Cloud.ScriptEngine;
 using SevenTiny.Cloud.ScriptEngine.CSharp;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 {
     public class CSharpDynamicScriptEngineTest
     {
-        [Trait("desc", "¶à´ÎÖ´ĞĞ")]
+        [Trait("desc", "å¤šæ¬¡æ‰§è¡Œ")]
         [Fact]
         public void MultiExecute()
         {
@@ -32,12 +32,12 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 1 };
-            //script.ExecutionStatistics = true;//¿ÉÒÔÊä³öÖ´ĞĞºÄÊ±£¬ÄÚ´æÕ¼ÓÃ
+            //script.ExecutionStatistics = true;//å¯ä»¥è¾“å‡ºæ‰§è¡Œè€—æ—¶ï¼Œå†…å­˜å ç”¨
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            //½á¹ûÏà¼Ó
+            //ç»“æœç›¸åŠ 
             int sum = 0;
             for (int i = 0; i < 10000; i++)
             {
@@ -54,7 +54,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             Assert.Equal(10000, sum);
         }
 
-        [Trait("desc", "Ö´ĞĞÍ¬Ãû²»Í¬ÀàµÄ²»Í¬·½·¨")]
+        [Trait("desc", "æ‰§è¡ŒåŒåä¸åŒç±»çš„ä¸åŒæ–¹æ³•")]
         [Fact]
         public void RepeatClassExecute()
         {
@@ -64,7 +64,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.TenantId = 0;
             script.Language = DynamicScriptLanguage.Csharp;
 
-            //ÏÈ±àÒëAÖ´ĞĞA
+            //å…ˆç¼–è¯‘Aæ‰§è¡ŒA
             script.Script =
             @"
             using System;
@@ -83,7 +83,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             var result1 = scriptEngineProvider.Execute<int>(script);
 
-            //±àÒëBÖ´ĞĞB
+            //ç¼–è¯‘Bæ‰§è¡ŒB
             script.Script =
          @"
         using System;
@@ -102,8 +102,8 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
 
             var result2 = scriptEngineProvider.Execute<int>(script);
 
-            //ÔÙÖ´ĞĞA£¬Õâ´ÎÊÇ´ÓBµÄ½Å±¾¶ÔÓ¦µÄHashÖµÈ¥ÕÒTestÀàĞÍ£¬ÀïÃæ²¢Ã»ÓĞA£¬ËùÒÔ±¨´íÃ»ÓĞÕÒµ½·½·¨A
-            //Ò²¾ÍÊÇËµ£¬ÓÃBµÄ½Å±¾È¥µ÷ÓÃAÊÇ´íÎóµÄÓÃ·¨£¬¼´±ãÀàµÄÃû³ÆÊÇÒ»ÑùµÄ£¬µ«ÆäÊµ²»ÊÇÒ»¸öÀà
+            //å†æ‰§è¡ŒAï¼Œè¿™æ¬¡æ˜¯ä»Bçš„è„šæœ¬å¯¹åº”çš„Hashå€¼å»æ‰¾Testç±»å‹ï¼Œé‡Œé¢å¹¶æ²¡æœ‰Aï¼Œæ‰€ä»¥æŠ¥é”™æ²¡æœ‰æ‰¾åˆ°æ–¹æ³•A
+            //ä¹Ÿå°±æ˜¯è¯´ï¼Œç”¨Bçš„è„šæœ¬å»è°ƒç”¨Aæ˜¯é”™è¯¯çš„ç”¨æ³•ï¼Œå³ä¾¿ç±»çš„åç§°æ˜¯ä¸€æ ·çš„ï¼Œä½†å…¶å®ä¸æ˜¯ä¸€ä¸ªç±»
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 333 };
@@ -111,7 +111,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             var result3 = scriptEngineProvider.Execute<int>(script);
         }
 
-        [Trait("desc", "ËÀÑ­»·²âÊÔ")]
+        [Trait("desc", "æ­»å¾ªç¯æµ‹è¯•")]
         [Fact]
         public void DeadCycile()
         {
@@ -136,7 +136,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             script.ClassFullName = "Test";
             script.FunctionName = "GetA";
             script.Parameters = new object[] { 111 };
-            script.IsTrustedScript = false;     //ÒòÎªÓĞËÀÑ­»·£¬ËùÒÔ·ÇĞÅÈÎ½Å±¾²âÊÔ£¬²âÊÔÊÇ·ñ»á³¬Ê±
+            script.IsTrustedScript = false;     //å› ä¸ºæœ‰æ­»å¾ªç¯ï¼Œæ‰€ä»¥éä¿¡ä»»è„šæœ¬æµ‹è¯•ï¼Œæµ‹è¯•æ˜¯å¦ä¼šè¶…æ—¶
             script.MillisecondsTimeout = 1000;
 
             var result = scriptEngineProvider.Execute<int>(script);
@@ -145,7 +145,7 @@ namespace Test.SevenTiny.Cloud.ScriptEngine.CSharp
             Assert.Equal("execution timed out!", result.Message);
         }
 
-        [Trait("desc", "ÒıÓÃÀàĞÍ²ÎÊı²âÊÔ")]
+        [Trait("desc", "å¼•ç”¨ç±»å‹å‚æ•°æµ‹è¯•")]
         [Fact]
         public void ReferenceArguments()
         {
