@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SevenTiny.Cloud.FaaS;
 using SevenTiny.Cloud.ScriptEngine.Configs;
 using System;
 using Xunit;
