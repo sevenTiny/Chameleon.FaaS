@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SevenTiny.Cloud.FaaS\SevenTiny.Cloud.FaaS.csproj" />
+    <ProjectReference Include="..\SevenTiny.Cloud.ScriptEngine.CSharp\SevenTiny.Cloud.ScriptEngine.CSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

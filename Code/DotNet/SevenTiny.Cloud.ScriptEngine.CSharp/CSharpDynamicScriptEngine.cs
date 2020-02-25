@@ -64,6 +64,9 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             dynamicScript.ClassFullName.CheckNullOrEmpty("classFullName cannot be null.");
             dynamicScript.FunctionName.CheckNullOrEmpty("FunctionName can not be null.");
 
+            if (dynamicScript.Language != DynamicScriptLanguage.Csharp)
+                throw new ArgumentOutOfRangeException("dynamicScript language is not csharp, please check code or language argument.");
+
             if (!dynamicScript.IsTrustedScript && dynamicScript.MillisecondsTimeout <= 0)
                 throw new ArgumentException("if execute untrusted code,please setting the milliseconds timeout!", "dynamicScript.MillisecondsTimeout");
         }

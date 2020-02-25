@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SevenTiny.Bantina.Logging;
+using SevenTiny.Cloud.ScriptEngine;
+using SevenTiny.Cloud.ScriptEngine.CSharp;
 
 namespace SevenTiny.Cloud.FaaS.GRpc
 {
@@ -15,7 +17,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc
         {
             services.AddGrpc();
 
-            services.AddSingleton<IDynamicScriptExecuteService, DynamicScriptExecuteService>();
+            services.AddSingleton<IDynamicScriptEngine, CSharpDynamicScriptEngine>();
             services.AddSingleton<ILog, LogManager>();
         }
 
