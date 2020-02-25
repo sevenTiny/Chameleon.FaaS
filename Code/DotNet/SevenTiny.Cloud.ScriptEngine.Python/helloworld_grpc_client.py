@@ -4,7 +4,7 @@ import helloworld_pb2_grpc
 
 def run():
     # 连接 rpc 服务器
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel('localhost:39901')
     # 调用 rpc 服务
     stub = helloworld_pb2_grpc.GreeterStub(channel)
     response = stub.SayHello(helloworld_pb2.HelloRequest(name='czl'))

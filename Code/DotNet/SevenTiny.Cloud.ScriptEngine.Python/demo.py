@@ -10,18 +10,21 @@ def vvv():
 va = vvv()
 """
 
-c = compile(s, '<string>', 'exec')
+try:
+    c = compile(s, '<string>', 'exec')
 
-if c is not None:
-    print('compile succeed!')
+    if c is not None:
+        print('compile succeed!')
 
-exec(c, globals(), locals())
+    exec(c, globals(), locals())
 
-a = globals()
+    a = globals()
 
-b = locals()
+    b = locals()
 
-d = a['va']
+    d = a['va']
 
-print(str(d))
+    print(str(d))
 
+except IndentationError:
+    print('compile error')
