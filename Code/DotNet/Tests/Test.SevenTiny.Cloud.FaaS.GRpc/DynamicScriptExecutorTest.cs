@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Grpc.Core;
 using Grpc.Net.Client;
 using SevenTiny.Cloud.FaaS.GRpc;
 using System;
@@ -15,7 +16,7 @@ namespace Test.SevenTiny.Cloud.FaaS.GRpc
         [Fact]
         public void Execute()
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var channel = GrpcChannel.ForAddress("http://localhost:5001", new GrpcChannelOptions { Credentials = ChannelCredentials.Insecure });
             var client = new DynamicScriptExecutor.DynamicScriptExecutorClient(channel);
 
             DynamicScript script = new DynamicScript();

@@ -1,0 +1,57 @@
+python grpc实践
+https://www.jianshu.com/p/43fdfeb105ff?from=timeline&isappinstalled=0
+
+生成TSL证书
+https://blog.csdn.net/weixin_34175509/article/details/88712124
+
+
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 7200 -key ca.key -out ca.pem
+
+openssl ecparam -genkey -name secp384r1 -out client.key
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -sha256 -CA ca.pem -CAkey ca.key -CAcreateserial -days 3650 -in server.csr -out server.pem
+
+openssl ecparam -genkey -name secp384r1 -out client.key
+openssl req -new -key client.key -out client.csr
+openssl x509 -req -sha256 -CA ca.pem -CAkey ca.key -CAcreateserial -days 3650 -in client.csr -out client.pem
+
+
+
+.\openssl.exe genrsa -passout pass:111111 -des3 -out ca.key 4096
+.\openssl.exe req -passin pass:111111 -new -x509 -days 365 -key ca.key -out ca.crt -subj "/CN=localhost"
+.\openssl.exe genrsa -passout pass:111111 -des3 -out server.key 4096
+.\openssl.exe req -passin pass:111111 -new -key server.key -out server.csr -subj "/CN=localhost"
+.\openssl.exe x509 -req -passin pass:111111 -days 365 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out server.crt
+.\openssl.exe rsa -passin pass:111111 -in server.key -out server.key
+.\openssl.exe genrsa -passout pass:111111 -des3 -out client.key 4096
+.\openssl.exe req -passin pass:111111 -new -key client.key -out client.csr -subj "/CN=localhost"
+.\openssl.exe x509 -passin pass:111111 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out client.crt
+.\openssl.exe rsa -passin pass:111111 -in client.key -out client.key
+.\openssl.exe pkcs8 -topk8 -nocrypt -in client.key -out client.pem
+.\openssl.exe pkcs8 -topk8 -nocrypt -in server.key -out server.pem
+
+openSSL工具下载
+http://slproweb.com/products/Win32OpenSSL.html
+
+
+grpc-tools
+// [python quickstart](https://grpc.io/docs/quickstart/python.html#run-a-grpc-application)
+// python -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. helloworld.proto
+
+// # 安装 python 下的 protoc 编译器
+// pip install grpcio-tools
+// 
+// # 编译 proto 文件
+// python -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. helloworld.proto
+// 
+// python -m grpc_tools.protoc: python 下的 protoc 编译器通过 python 模块(module) 实现, 所以说这一步非常省心
+// --python_out=. : 编译生成处理 protobuf 相关的代码的路径, 这里生成到当前目录
+// --grpc_python_out=. : 编译生成处理 grpc 相关的代码的路径, 这里生成到当前目录
+// -I. helloworld.proto : proto 文件的路径, 这里的 proto 文件在当前目录
+
+
+
+好像上面的tsl已经不能用了，参考下面这个
+https://grpc.io/docs/guides/auth/
+http://doc.oschina.net/grpc?t=58010

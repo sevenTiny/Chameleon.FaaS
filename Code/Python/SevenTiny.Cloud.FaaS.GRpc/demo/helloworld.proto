@@ -15,6 +15,8 @@
 // helloworld.proto
 syntax = "proto3";
 
+option csharp_namespace = "Demo";
+
 service Greeter {
     rpc SayHello(HelloRequest) returns (HelloReply) {}
     rpc SayHelloAgain(HelloRequest) returns (HelloReply) {}
