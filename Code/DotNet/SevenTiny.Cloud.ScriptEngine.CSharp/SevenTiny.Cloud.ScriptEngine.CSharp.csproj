@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SevenTiny.Cloud.ScriptEngine" Version="1.0.45" />
+    <ProjectReference Include="..\SevenTiny.Cloud.ScriptEngine\SevenTiny.Cloud.ScriptEngine.csproj" />
   </ItemGroup>
 
 </Project>
