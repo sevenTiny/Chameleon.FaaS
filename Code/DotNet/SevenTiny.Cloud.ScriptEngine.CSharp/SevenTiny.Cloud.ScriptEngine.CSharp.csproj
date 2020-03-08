@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>7tiny</Authors>
+    <Company>www.7tiny.com</Company>
+    <PackageProjectUrl>https://github.com/sevenTiny/SevenTiny.Cloud.ScriptEngine</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sevenTiny/SevenTiny.Cloud.ScriptEngine.git</RepositoryUrl>
+    <RepositoryType>.net core</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
