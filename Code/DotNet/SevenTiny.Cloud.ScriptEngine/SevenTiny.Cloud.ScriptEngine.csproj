@@ -16,11 +16,18 @@
 
   <ItemGroup>
     <PackageReference Include="Fasterflect.Netstandard" Version="1.0.9" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SevenTiny.Bantina" Version="1.0.55" />
+    <PackageReference Include="SevenTiny.Bantina" Version="1.0.56" />
+    <PackageReference Include="SevenTiny.Bantina.Configuration.Core" Version="1.0.31" />
     <PackageReference Include="SevenTiny.Bantina.Configuration.Json" Version="1.0.16" />
     <PackageReference Include="SevenTiny.Bantina.Configuration.MySql" Version="1.0.23" />
-    <PackageReference Include="SevenTiny.Bantina.Logging" Version="1.0.22" />
+    <PackageReference Include="SevenTiny.Bantina.Logging" Version="1.0.26" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\7tiny\.nuget\packages\seventiny.bantina.logging\1.0.26\contentFiles\any\netstandard2.0\SevenTinyConfig\log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

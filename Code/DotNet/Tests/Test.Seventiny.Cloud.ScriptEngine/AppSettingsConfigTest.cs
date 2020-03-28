@@ -10,7 +10,7 @@ namespace Test.Seventiny.Cloud.ScriptEngine
         [Fact]
         public void GetCurrentAppName()
         {
-            var currentAppName = AppSettingsConfigHelper.GetCurrentAppName();
+            var currentAppName = AppSettingsConfigHelper.GetAppName();
             Assert.NotNull(currentAppName);
         }
     }

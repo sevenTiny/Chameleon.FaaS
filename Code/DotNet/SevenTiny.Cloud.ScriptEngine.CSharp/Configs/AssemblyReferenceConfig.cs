@@ -20,7 +20,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp.Configs
 
         public static List<AssemblyInfo> GetCurrentAppAssemblyReferenceInfos()
         {
-            return Instance?.Where(t => t.AppName.ToUpper().Equals(DefaultAppName) || t.AppName.Equals(AppSettingsConfigHelper.GetCurrentAppName()))?.Select(t => new AssemblyInfo { AppName = t.AppName, Assembly = t.Assembly })?.ToList();
+            return Instance?.Where(t => t.AppName.ToUpper().Equals(DefaultAppName) || t.AppName.Equals(AppSettingsConfigHelper.GetAppName()))?.Select(t => new AssemblyInfo { AppName = t.AppName, Assembly = t.Assembly })?.ToList();
         }
     }
 

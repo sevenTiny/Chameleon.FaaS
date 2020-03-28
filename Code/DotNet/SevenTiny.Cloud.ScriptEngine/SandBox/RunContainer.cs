@@ -1,4 +1,5 @@
 ﻿using Fasterflect;
+using Microsoft.Extensions.Logging;
 using SevenTiny.Bantina.Logging;
 using System;
 using System.Threading;
@@ -9,7 +10,8 @@ namespace SevenTiny.Cloud.ScriptEngine.SandBox
     [Serializable]
     internal class RunContainer : MarshalByRefObject
     {
-        private static readonly ILog _logger = new LogManager();
+        private static readonly ILogger _logger = new LogManager();
+
         public object ExecuteUntrustedCode(Type type, string methodName, params object[] parameters)
         {
             var obj = Activator.CreateInstance(type);
@@ -19,7 +21,7 @@ namespace SevenTiny.Cloud.ScriptEngine.SandBox
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, $"call method [{methodName}] error.");
             }
             return null;
         }
@@ -35,7 +37,7 @@ namespace SevenTiny.Cloud.ScriptEngine.SandBox
             if (!t.Wait(millisecondsTimeout, token))
             {
                 tokenSource.Cancel();
-                _logger.Error(string.Format("[Tag:{0},Method:{1},Timeout:{2}, execution timed out", type.Assembly.FullName, methodName, millisecondsTimeout));
+                _logger.LogError(string.Format("[Tag:{0},Method:{1},Timeout:{2}, execution timed out", type.Assembly.FullName, methodName, millisecondsTimeout));
                 return null;
             }
             return result;

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Bantina.Security;
@@ -30,8 +31,8 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
         private readonly string _path;
         private static readonly object _lock = new object();
         private static IDictionary<string, Type> _scriptTypeDict = new ConcurrentDictionary<string, Type>();
-        private static readonly ILog _logger = new LogManager();
-        private readonly static string _currentAppName = AppSettingsConfigHelper.GetCurrentAppName();
+        private static readonly ILogger _logger = new LogManager();
+        private readonly static string _currentAppName = AppSettingsConfigHelper.GetAppName();
 
         static CSharpDynamicScriptEngine()
         {
@@ -82,7 +83,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             //检查编译
             if (!BuildDynamicScript(dynamicScript, out string errorMessage))
             {
-                _logger.Error($"Build Script Error ! Script Info:{JsonConvert.SerializeObject(dynamicScript)}");
+                _logger.LogError($"Build Script Error ! Script Info:{JsonConvert.SerializeObject(dynamicScript)}");
                 return DynamicScriptExecuteResult<T>.Error(errorMessage);
             }
 
@@ -107,18 +108,15 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             }
             catch (MissingMethodException missingMethod)
             {
-                _logger.Error(
-                    new MissingMethodException(
-                        String.Format("TenantId:{0},FunctionName:{1},Language:{2},AppName:{3},ScriptHash:{4},ParameterCount:{5},ErrorMsg: {6}",
-                             _tenantId, dynamicScript.FunctionName, "CSharp", _currentAppName, _scriptHash, dynamicScript.Parameters?.Length, missingMethod.Message)));
+                _logger.LogError(missingMethod, string.Format("TenantId:{0},FunctionName:{1},Language:{2},AppName:{3},ScriptHash:{4},ParameterCount:{5},ErrorMsg: {6}", _tenantId, dynamicScript.FunctionName, "CSharp", _currentAppName, _scriptHash, dynamicScript.Parameters?.Length, missingMethod.Message));
+
                 return DynamicScriptExecuteResult<T>.Error($"function name can not be null.");
             }
             catch (Exception ex)
             {
-                string errorMsg = ex.Message + ",innerEx:" + ex.InnerException?.Message;
-                string errorMsgContext = string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, _currentAppName, dynamicScript.FunctionName, ex.Message);
-                _logger.Error(errorMsgContext, ex);
-                return DynamicScriptExecuteResult<T>.Error(errorMsg);
+                _logger.LogError(ex, string.Format("Script objectId:{0},tenantId:{1},appName:{2},functionName:{3},errorMsg:{4}", null, dynamicScript.TenantId, _currentAppName, dynamicScript.FunctionName, ex.Message));
+
+                return DynamicScriptExecuteResult<T>.Error(ex.Message + ",innerEx:" + ex.InnerException?.Message);
             }
         }
 
@@ -153,7 +151,9 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             catch (Exception ex)
             {
                 errorMessage = ex.ToString();
-                _logger.Error(ex);
+
+                _logger.LogError(ex, "BuildDynamicScript Error");
+
                 return false;
             }
         }
@@ -208,11 +208,13 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
                             WriteDynamicScriptCs(Path.Combine(EnsureOutputPath(), assemblyName + ".cs"), script);
 
                         errorMsg = msgs.ToString();
-                        _logger.Error(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, "CSharp", _currentAppName, errorMsg, _scriptHash));
+                        _logger.LogError(String.Format("{0}：{1}：{2}：{3}：{4}", _tenantId, "CSharp", _currentAppName, errorMsg, _scriptHash));
                     }
                 }
             }
-            _logger.Debug($"CreateAsmExecutor -> _context:{_tenantId},{"CSharp"}, {_currentAppName},{_scriptHash} _scriptTypeDict:{_scriptTypeDict?.Count} _metadataReferences:{ CSharpReferenceManager.GetMetaDataReferences()[_currentAppName]?.Count}");
+
+            _logger.LogInformation($"CreateAsmExecutor -> _context:{_tenantId},{"CSharp"}, {_currentAppName},{_scriptHash} _scriptTypeDict:{_scriptTypeDict?.Count} _metadataReferences:{ CSharpReferenceManager.GetMetaDataReferences()[_currentAppName]?.Count}");
+
             return assembly;
         }
         private SyntaxTree GetSyntaxTree(string script)
@@ -241,7 +243,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "WriteDynamicScriptFile Error");
             }
         }
         private void WriteDynamicScriptCs(string filePathName, string script)
@@ -253,7 +255,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "WriteDynamicScriptCs Error");
             }
         }
         #endregion
@@ -315,7 +317,9 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             if (!t.Wait(millisecondsTimeout, token))
             {
                 tokenSource.Cancel();
-                _logger.Error(errorMessage);
+
+                _logger.LogError(errorMessage);
+
                 return DynamicScriptExecuteResult<T>.Error("execution timed out!");
             }
 

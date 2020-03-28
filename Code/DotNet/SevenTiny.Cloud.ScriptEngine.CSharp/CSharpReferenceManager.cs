@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using SevenTiny.Bantina.Logging;
 using SevenTiny.Cloud.ScriptEngine.Configs;
 using SevenTiny.Cloud.ScriptEngine.CSharp.Configs;
@@ -12,9 +13,9 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 {
     internal static class CSharpReferenceManager
     {
-        private static readonly ILog _logger = new LogManager();
+        private static readonly ILogger _logger = new LogManager();
 
-        private static string _currentAppName => AppSettingsConfigHelper.GetCurrentAppName();
+        private static string _currentAppName => AppSettingsConfigHelper.GetAppName();
 
         private static ConcurrentDictionary<string, List<MetadataReference>> _metadataReferences = new ConcurrentDictionary<string, List<MetadataReference>>();
 
@@ -31,7 +32,8 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
             ReferenceAssembly();
 
             var referenceArrayJson = Newtonsoft.Json.JsonConvert.SerializeObject(_metadataReferences[_currentAppName]?.Select(t => t.Display)?.ToArray());
-            _logger.Debug($"dll load finished,load detail：{referenceArrayJson}");
+
+            _logger.LogInformation($"dll load finished,load detail：{referenceArrayJson}");
         }
 
         private static void ReferenceNecessaryAssembly()
@@ -73,23 +75,24 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
             dirs.Insert(0, AppContext.BaseDirectory);
 
-            _logger.Debug($"scan config dirs: [{string.Join(",", dirs)}].");
+            _logger.LogInformation($"scan config dirs: [{string.Join(",", dirs)}].");
 
-            if (assemblyInfos != null && assemblyInfos.Any())
+            if (assemblyInfos == null || !assemblyInfos.Any())
+                return;
+
+            foreach (var assemblyInfo in assemblyInfos)
             {
-                foreach (var assemblyInfo in assemblyInfos)
+                foreach (var dir in dirs)
                 {
-                    foreach (var dir in dirs)
-                    {
-                        var fileFullPath = Path.Combine(dir, assemblyInfo.Assembly);
-                        if (!File.Exists(fileFullPath))
-                        {
-                            continue;
-                        }
-                        //如果文件存在，则加载完成后跳过后续扫描
-                        _metadataReferences[_currentAppName].Add(MetadataReference.CreateFromFile(fileFullPath));
-                        break;
-                    }
+                    var fileFullPath = Path.Combine(dir, assemblyInfo.Assembly);
+
+                    if (!File.Exists(fileFullPath))
+                        continue;
+
+                    //如果文件存在，则加载完成后跳过后续扫描
+                    _metadataReferences[_currentAppName].Add(MetadataReference.CreateFromFile(fileFullPath));
+
+                    break;
                 }
             }
         }
