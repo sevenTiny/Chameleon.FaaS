@@ -1,5 +1,5 @@
 ﻿using Grpc.Core;
-using SevenTiny.Bantina.Logging;
+using Microsoft.Extensions.Logging;
 using SevenTiny.Bantina.Validation;
 using SevenTiny.Cloud.FaaS.GRpc.Helpers;
 using SevenTiny.Cloud.ScriptEngine;
@@ -11,9 +11,9 @@ namespace SevenTiny.Cloud.FaaS.GRpc
     public class DynamicScriptExecutorService : DynamicScriptExecutor.DynamicScriptExecutorBase
     {
         private IDynamicScriptEngine _dynamicScriptEngine;
-        private ILog _logger;
+        private ILogger _logger;
 
-        public DynamicScriptExecutorService(IDynamicScriptEngine dynamicScriptEngine, ILog logger)
+        public DynamicScriptExecutorService(IDynamicScriptEngine dynamicScriptEngine, ILogger logger)
         {
             _dynamicScriptEngine = dynamicScriptEngine;
             _logger = logger;
@@ -39,7 +39,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "CheckScript Error");
                 return Task.FromResult(new DynamicScriptExecuteResult { IsSuccess = false, Message = ex.InnerException?.ToString() ?? ex.ToString() });
             }
         }
@@ -53,7 +53,7 @@ namespace SevenTiny.Cloud.FaaS.GRpc
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "Execute Error");
                 return Task.FromResult(new DynamicScriptExecuteResult { IsSuccess = false, Message = ex.InnerException?.ToString() ?? ex.ToString() });
             }
         }
