@@ -349,7 +349,11 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
 
             for (int i = 0; i < parameterInfos.Length; i++)
             {
-                result[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
+                //这里如果有参数没有实现IConvert接口，则会抛出异常
+                if (typeof(IConvertible).IsAssignableFrom(parameterInfos[i].ParameterType))
+                    result[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
+                else
+                    result[i] = parameterInfos[i];
             }
 
             return result;
