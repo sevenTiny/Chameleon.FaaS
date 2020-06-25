@@ -353,7 +353,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
                 if (typeof(IConvertible).IsAssignableFrom(parameterInfos[i].ParameterType))
                     result[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
                 else
-                    result[i] = parameterInfos[i];
+                    result[i] = parameters[i];
             }
 
             return result;
