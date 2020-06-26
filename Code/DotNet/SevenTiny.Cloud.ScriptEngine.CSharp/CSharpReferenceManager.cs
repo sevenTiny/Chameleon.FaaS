@@ -74,6 +74,7 @@ namespace SevenTiny.Cloud.ScriptEngine.CSharp
                 dirs = new List<string>();
 
             dirs.Insert(0, AppContext.BaseDirectory);
+            dirs.Add(Path.GetDirectoryName(typeof(object).Assembly.Location));
 
             _logger.LogInformation($"scan config dirs: [{string.Join(",", dirs)}].");
 
