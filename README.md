@@ -1,4 +1,4 @@
-# SevenTiny.Cloud.FaaS
+# Chameleon.FaaS
 （Function as a Service）函数即服务框架是一组灵活，可靠，动态伸缩，支持多语言，沙箱化的脚本服务框架。借助该框架的能力，客户端无需关心业务脚本的运行环境，机器部署，服务扩容等基础设施。而将关注点聚焦在核心功能脚本的编写以及功能脚本的触发时机这两点上。
 
 （Function as a Service）The Function as a Service function is a flexible, reliable, dynamic,mul-language, and sandboxed script service framework. With the capabilities of the framework, the client does not need to care about the operating environment of the business script, machine deployment, service expansion and other infrastructure. Focus on the writing of core function scripts and the timing of triggering function scripts.
@@ -12,8 +12,8 @@ At the heart of the FaaS framework is the "Dynamic Scripting Engine", which prov
 The ability to dynamically compile can be easily applied to scenarios such as PaaS, FaaS, sandboxing, and plug-in to maximize the need for "dynamic" and "hot swap".
 
 ## 示例代码 Example
-> 该代码可以在 Test.SevenTiny.Cloud.ScriptEngine.CSharp 项目的 Demo.cs 文件中找到  
-> This code can be found in the Demo.cs file of the Test.SevenTiny.Cloud.ScriptEngine.CSharp project.
+> 该代码可以在 src\dotnet\Tests\Test.Bamboo.ScriptEngine.CSharp 项目的 Demo.cs 文件中找到  
+> This code can be found in the Demo.cs file of the src\dotnet\Tests\Test.Bamboo.ScriptEngine.CSharp project.
 
 ```CSharp
 [Fact]
@@ -50,7 +50,7 @@ public void Execute()
 4. 定时任务模式 | Timed task mode
 
 ## 使用方式
-> 首先需要提供MySql环境，并导入框架的SQL以提供远程配置的能力，详见使用教程
+<!-- > 首先需要提供MySql环境，并导入框架的SQL以提供远程配置的能力，详见使用教程
 1. 直接引用对应语言的SDK，开启本地模式使用
 2. 部署Grpc服务端，客户端采用 Grpc 远程调用
 3. 部署webapi服务端，客户端 http 请求远程调用
@@ -101,4 +101,4 @@ The AppName column is used to distinguish between different AppName dynamic scri
 - Logging  
 Log component configuration, you can set whether the different levels of logs in the script engine service are output. For example, if Level_Debug is set to 0, all Debug logs will not be output.
 - DynamicScript  
-User-configured scripts under the FaaS platform will be stored in this database table.
+User-configured scripts under the FaaS platform will be stored in this database table. -->
