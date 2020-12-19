@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Chameleon.Faas.Common
 {
+#error 这个还是独立Chameleon.Common项目统一比较好，这里引包即可
     /// <summary>
     /// Faas组件上下文
     /// </summary>
