@@ -58,7 +58,7 @@ namespace Bamboo.ScriptEngine.CSharp
             dynamicScript.ClassFullName.CheckNullOrEmpty("classFullName cannot be null.");
             dynamicScript.FunctionName.CheckNullOrEmpty("FunctionName can not be null.");
 
-            if (dynamicScript.Language != DynamicScriptLanguage.Csharp)
+            if (dynamicScript.Language != DynamicScriptLanguage.CSharp)
                 throw new ArgumentOutOfRangeException("dynamicScript language is not csharp, please check code or language argument.");
 
             if (dynamicScript.IsExecutionInSandbox && dynamicScript.ExecutionInSandboxMillisecondsTimeout <= 0)
@@ -153,7 +153,7 @@ namespace Bamboo.ScriptEngine.CSharp
 
         private string GetScriptKeyHash(string script)
         {
-            return _scriptHash = string.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.Csharp, _currentAppName, MD5Helper.GetMd5Hash(script));
+            return _scriptHash = string.Format(Consts.AssemblyScriptKey, DynamicScriptLanguage.CSharp, _currentAppName, MD5Helper.GetMd5Hash(script));
         }
 
         #region Build and Create Assembly

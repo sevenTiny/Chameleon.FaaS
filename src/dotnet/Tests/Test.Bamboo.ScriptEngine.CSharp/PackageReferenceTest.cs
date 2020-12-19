@@ -14,7 +14,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             IScriptEngine scriptEngineProvider = new CSharpScriptEngine();
 
             DynamicScript script = new DynamicScript();
-            script.Language = DynamicScriptLanguage.Csharp;
+            script.Language = DynamicScriptLanguage.CSharp;
             script.Script =
             @"
             using System;
