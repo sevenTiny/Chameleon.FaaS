@@ -86,7 +86,7 @@ namespace Bamboo.ScriptEngine.CSharp
             //当前程序集根目录下的dll全部加载
             dllScanAndLoadPath.Add(AppContext.BaseDirectory);
 
-            _logger.LogInformation($"bamboo script engine csharp compnent -> scan config dirs: {string.Join(",", dllScanAndLoadPath)}.");
+            _logger.LogInformation($"bamboo script engine csharp compnent -> scan config dirs: [{string.Join(",", dllScanAndLoadPath)}]");
 
             foreach (var dllPath in dllScanAndLoadPath)
             {
@@ -163,7 +163,7 @@ namespace Bamboo.ScriptEngine.CSharp
                         //复制包
                         if (!resource.CopyNupkgToStreamAsync(package.PackageId, new NuGetVersion(package.Version), packageStream, cache, logger, cancellationToken).Result)
                         {
-                            _logger.LogError($"copy package of {package.PackageId} {package.Version} from source [{source}] error.");
+                            _logger.LogError($"copy package of {package.PackageId} {package.Version} from source [{source}] error");
                             break;
                         }
 
