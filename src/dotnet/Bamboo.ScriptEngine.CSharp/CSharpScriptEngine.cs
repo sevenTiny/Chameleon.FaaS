@@ -335,7 +335,9 @@ namespace Bamboo.ScriptEngine.CSharp
 
         private object[] SafeTypeConvertParameters(string method, ParameterInfo[] parameterInfos, object[] parameters)
         {
-            Ensure.ArgumentNotNullOrEmpty(parameterInfos, nameof(parameterInfos));
+            if (!parameterInfos.Any())
+                return null;
+
             Ensure.ArgumentNotNullOrEmpty(parameters, nameof(parameters));
 
             if (parameterInfos.Length != parameters.Length)

@@ -83,17 +83,17 @@ namespace Test.Bamboo.ScriptEngine.CSharp
 
             //编译B执行B
             script.Script =
-         @"
-        using System;
+            @"
+            using System;
 
-        public class Test
-        {
-            public int GetB(int a)
+            public class Test
             {
-                return a;
+                public int GetB(int a)
+                {
+                    return a;
+                }
             }
-        }
-        ";
+            ";
             script.ClassFullName = "Test";
             script.FunctionName = "GetB";
             script.Parameters = new object[] { 99999999 };

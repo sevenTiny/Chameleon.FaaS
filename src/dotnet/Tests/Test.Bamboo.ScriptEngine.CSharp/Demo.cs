@@ -66,7 +66,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             script.ClassFullName = "Test";
             script.FunctionName = "GetC";
             script.Parameters = new object[] { 1 };
-            script.IsExecutionInSandbox = false;                    //沙箱环境执行
+            script.IsExecutionInSandbox = true;                    //沙箱环境执行
             script.ExecutionInSandboxMillisecondsTimeout = 100;     //沙箱环境执行超时时间
 
             var result = scriptEngineProvider.Execute<int>(script);

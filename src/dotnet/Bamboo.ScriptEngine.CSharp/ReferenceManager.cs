@@ -83,8 +83,6 @@ namespace Bamboo.ScriptEngine.CSharp
         {
             //dll加载的目录
             var dllScanAndLoadPath = ScriptEngineCSharpConfigHelper.GetDllScanAndLoadPath();
-            //当前程序集根目录下的dll全部加载
-            dllScanAndLoadPath.Add(AppContext.BaseDirectory);
 
             _logger.LogInformation($"bamboo script engine csharp compnent -> scan config dirs: [{string.Join(",", dllScanAndLoadPath)}]");
 
