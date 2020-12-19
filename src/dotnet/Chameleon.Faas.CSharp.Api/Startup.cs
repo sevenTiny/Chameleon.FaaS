@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Chameleon.Faas.Api
+namespace Chameleon.Faas.CSharp.Api
 {
     public class Startup
     {
@@ -29,7 +29,7 @@ namespace Chameleon.Faas.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chameleon.Faas.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chameleon.Faas.CSharp.Api", Version = "v1" });
             });
         }
 
@@ -40,7 +40,7 @@ namespace Chameleon.Faas.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chameleon.Faas.Api v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chameleon.Faas.CSharp.Api v1"));
             }
 
             app.UseRouting();

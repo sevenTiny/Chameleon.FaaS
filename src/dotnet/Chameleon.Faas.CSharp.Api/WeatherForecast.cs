@@ -1,6 +1,6 @@
 using System;
 
-namespace Chameleon.Faas.Api
+namespace Chameleon.Faas.CSharp.Api
 {
     public class WeatherForecast
     {
