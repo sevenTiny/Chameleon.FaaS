@@ -15,7 +15,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             IScriptEngine scriptEngineProvider = new CSharpScriptEngine();
 
             DynamicScript script = new DynamicScript();
-            script.Language = DynamicScriptLanguage.Csharp;
+            script.Language = DynamicScriptLanguage.CSharp;
             script.Script =
             @"
             using System;
@@ -60,7 +60,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             IScriptEngine scriptEngineProvider = new CSharpScriptEngine();
 
             DynamicScript script = new DynamicScript();
-            script.Language = DynamicScriptLanguage.Csharp;
+            script.Language = DynamicScriptLanguage.CSharp;
 
             //先编译A执行A
             script.Script =
@@ -83,17 +83,17 @@ namespace Test.Bamboo.ScriptEngine.CSharp
 
             //编译B执行B
             script.Script =
-         @"
-        using System;
+            @"
+            using System;
 
-        public class Test
-        {
-            public int GetB(int a)
+            public class Test
             {
-                return a;
+                public int GetB(int a)
+                {
+                    return a;
+                }
             }
-        }
-        ";
+            ";
             script.ClassFullName = "Test";
             script.FunctionName = "GetB";
             script.Parameters = new object[] { 99999999 };
@@ -116,7 +116,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             IScriptEngine scriptEngineProvider = new CSharpScriptEngine();
 
             DynamicScript script = new DynamicScript();
-            script.Language = DynamicScriptLanguage.Csharp;
+            script.Language = DynamicScriptLanguage.CSharp;
             script.Script =
             @"
             using System;
@@ -149,7 +149,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             IScriptEngine scriptEngineProvider = new CSharpScriptEngine();
 
             DynamicScript script = new DynamicScript();
-            script.Language = DynamicScriptLanguage.Csharp;
+            script.Language = DynamicScriptLanguage.CSharp;
             script.Script =
             @"
             using System;
@@ -171,7 +171,7 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             var result = scriptEngineProvider.Execute<object>(script);
 
             DynamicScript script2 = new DynamicScript();
-            script2.Language = DynamicScriptLanguage.Csharp;
+            script2.Language = DynamicScriptLanguage.CSharp;
             script2.Script =
             @"
             using System;

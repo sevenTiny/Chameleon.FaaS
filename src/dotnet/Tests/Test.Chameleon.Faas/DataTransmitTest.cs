@@ -1,13 +1,14 @@
 ﻿using Bamboo.ScriptEngine;
 using Bamboo.ScriptEngine.CSharp;
+using Chameleon.Common.Context;
 using System.Diagnostics;
 using Xunit;
 
-namespace Test.Bamboo.ScriptEngine.CSharp
+namespace Test.Chameleon.Faas
 {
-    public class PackageReferenceTest
+    public class DataTransmitTest
     {
-        [Trait("desc", "下载第三方包")]
+        [Trait("desc", "对象跨脚本传递")]
         [Fact]
         public void DownloadPackage()
         {
@@ -18,25 +19,29 @@ namespace Test.Bamboo.ScriptEngine.CSharp
             script.Script =
             @"
             using System;
-            using Newtonsoft.Json;
+            using Chameleon.Common.Context;
 
             public class Test
             {
-                public string GetA(int a)
+                public string Method()
                 {
-                    return JsonConvert.SerializeObject(a);
+                    string stringProp = ChameleonContext.Current.Get(""StrKey"");
+                    int intProp = ChameleonContext.Current.Get<int>(""IntKey"");
+                    return (stringProp+intProp);
                 }
             }
             ";
             script.ClassFullName = "Test";
-            script.FunctionName = "GetA";
-            script.Parameters = new object[] { 111 };
+            script.FunctionName = "Method";
             script.IsExecutionInSandbox = false;
+
+            ChameleonContext.Current.Put("StrKey", "888");
+            ChameleonContext.Current.Put("IntKey", 999);
 
             var result = scriptEngineProvider.Execute<string>(script);
 
             Assert.True(result.IsSuccess);
-            Assert.Equal("111", result.Data);
+            Assert.Equal("888999", result.Data);
         }
     }
 }

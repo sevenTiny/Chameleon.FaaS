@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Chameleon.Faas.Api
+namespace Chameleon.Faas.CSharp.Api
 {
     public class Program
     {

@@ -1,0 +1,59 @@
+﻿using Chameleon.Common.Context;
+using Chameleon.Common.Models;
+using Chameleon.Faas.CSharp.Api.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+
+namespace Chameleon.Faas.CSharp.Api.Controllers
+{
+    [Route("api/faas/csharp/v1")]
+    [ApiController]
+    public class FaasV1Controller : ControllerBase
+    {
+        private const string FaasRequestBody = "FaasRequestBody";
+        private const string FaasRequestQuery = "FaasRequestQuery";
+
+        private readonly ICSharpScriptService _cSharpScriptService;
+
+        public FaasV1Controller(ICSharpScriptService cSharpScriptService)
+        {
+            _cSharpScriptService = cSharpScriptService;
+        }
+
+        [Route("check")]
+        [HttpPost]
+        public IActionResult Check([FromQuery] string scriptId, [FromBody] object argument)
+        {
+            if (string.IsNullOrEmpty(scriptId) || !Guid.TryParse(scriptId, out Guid id))
+                return Ok(ResponseModel.Error(50001, "scriptId 参数不正确"));
+
+            var result = _cSharpScriptService.Check(id);
+
+            if (!result.IsSuccess)
+                return Ok(ResponseModel.Error(50002, "检查脚本失败：" + result.Message));
+
+            return Ok(ResponseModel.Success("操作成功"));
+        }
+
+        [Route("run")]
+        [HttpPost]
+        public IActionResult Run([FromQuery] string scriptId, [FromBody] object argument)
+        {
+            if (string.IsNullOrEmpty(scriptId) || !Guid.TryParse(scriptId, out Guid id))
+                return Ok(ResponseModel.Error(50003, "scriptId 参数不正确"));
+
+            //赋值上下文
+            ChameleonContext.Current.Put(FaasRequestQuery, HttpContext.Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString()));
+            ChameleonContext.Current.Put(FaasRequestBody, argument);
+
+            var result = _cSharpScriptService.Run(id);
+
+            if (!result.IsSuccess)
+                return Ok(ResponseModel.Error(50004, "执行脚本失败：" + result.Message));
+
+            return Ok(ResponseModel.Success("操作成功", result.Data));
+        }
+    }
+}

@@ -1,3 +1,8 @@
+using Bamboo.Logging;
+using Bamboo.ScriptEngine;
+using Bamboo.ScriptEngine.CSharp;
+using Chameleon.Faas.CSharp.Api.Controllers;
+using Chameleon.Faas.CSharp.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Chameleon.Faas.Api
+namespace Chameleon.Faas.CSharp.Api
 {
     public class Startup
     {
@@ -25,11 +30,14 @@ namespace Chameleon.Faas.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ILogger>(new BambooLogger<Startup>());
+            services.AddSingleton<IScriptEngine>(new CSharpScriptEngine());
+            services.AddSingleton<ICSharpScriptService, CSharpScriptService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chameleon.Faas.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Chameleon.Faas.CSharp.Api", Version = "v1" });
             });
         }
 
@@ -40,7 +48,7 @@ namespace Chameleon.Faas.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chameleon.Faas.Api v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Chameleon.Faas.CSharp.Api v1"));
             }
 
             app.UseRouting();
