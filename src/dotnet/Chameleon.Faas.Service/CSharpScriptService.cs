@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Bamboo.ScriptEngine;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Chameleon.Faas.CSharp.Api.Services
 {
@@ -12,41 +10,84 @@ namespace Chameleon.Faas.CSharp.Api.Services
         /// 校验脚本
         /// </summary>
         /// <param name="scriptId"></param>
-        void Check(Guid scriptId);
+        ExecutionResult Check(Guid scriptId);
         /// <summary>
         /// 执行脚本
         /// </summary>
         /// <param name="scripeId"></param>
         /// <returns></returns>
-        object Run(Guid scripeId);
+        ExecutionResult<object> Run(Guid scripeId);
         /// <summary>
         /// 异步执行脚本
         /// </summary>
         /// <param name="scripeId"></param>
         /// <returns></returns>
-        object RunAsync(Guid scripeId);
+        ExecutionResult<object> RunAsync(Guid scripeId);
     }
 
     public class CSharpScriptService : ICSharpScriptService
     {
-        private readonly ILogger<CSharpScriptService> _logger;
+        private readonly IScriptEngine _scriptEngine;
+        private readonly ILogger _logger;
 
-        public CSharpScriptService(ILogger<CSharpScriptService> logger)
+        public CSharpScriptService(IScriptEngine scriptEngine, ILogger logger)
         {
+            _scriptEngine = scriptEngine;
             _logger = logger;
         }
 
-        public void Check(Guid scriptId)
+        public ExecutionResult Check(Guid scriptId)
         {
-            throw new NotImplementedException();
+            //脚本的信息从库里获取
+            DynamicScript script = new DynamicScript();
+            script.Language = DynamicScriptLanguage.CSharp;
+            script.Script =
+            @"
+            using System;
+            using Chameleon.Common.Context;
+            using Newtonsoft.Json;
+
+            public class Test
+            {
+                public string Method()
+                {
+                    var query = ChameleonContext.Current.Get(""FaasRequestQuery"");
+                    return (JsonConvert.SerializeObject(query));
+                }
+            }
+            ";
+            script.ClassFullName = "Test";
+            script.FunctionName = "Method";
+            return _scriptEngine.CheckScript(script);
         }
 
-        public object Run(Guid scripeId)
+        public ExecutionResult<object> Run(Guid scripeId)
         {
-            throw new NotImplementedException();
+            //脚本的信息从库里获取
+            DynamicScript script = new DynamicScript();
+            script.Language = DynamicScriptLanguage.CSharp;
+            script.Script =
+            @"
+            using System;
+            using Chameleon.Common.Context;
+            using Newtonsoft.Json;
+
+            public class Test
+            {
+                public string Method()
+                {
+                    var query = ChameleonContext.Current.Get(""FaasRequestQuery"");
+                    return (JsonConvert.SerializeObject(query));
+                }
+            }
+            ";
+            script.ClassFullName = "Test";
+            script.FunctionName = "Method";
+
+            return _scriptEngine.Execute<object>(script);
         }
 
-        public object RunAsync(Guid scripeId)
+        public ExecutionResult<object> RunAsync(Guid scripeId)
         {
             throw new NotImplementedException();
         }

@@ -1,3 +1,8 @@
+using Bamboo.Logging;
+using Bamboo.ScriptEngine;
+using Bamboo.ScriptEngine.CSharp;
+using Chameleon.Faas.CSharp.Api.Controllers;
+using Chameleon.Faas.CSharp.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +30,9 @@ namespace Chameleon.Faas.CSharp.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ILogger>(new BambooLogger<Startup>());
+            services.AddSingleton<IScriptEngine>(new CSharpScriptEngine());
+            services.AddSingleton<ICSharpScriptService, CSharpScriptService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
