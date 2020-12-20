@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Chameleon.Common" Version="1.0.12" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -21,12 +22,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Bamboo.ScriptEngine.CSharp\Bamboo.ScriptEngine.CSharp.csproj" />
-    <ProjectReference Include="..\..\Chameleon.Faas.Common\Chameleon.Faas.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

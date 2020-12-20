@@ -1,6 +1,6 @@
 ﻿using Bamboo.ScriptEngine;
 using Bamboo.ScriptEngine.CSharp;
-using Chameleon.Faas.Common;
+using Chameleon.Common.Context;
 using System.Diagnostics;
 using Xunit;
 
@@ -19,14 +19,14 @@ namespace Test.Chameleon.Faas
             script.Script =
             @"
             using System;
-            using Chameleon.Faas.Common;
+            using Chameleon.Common.Context;
 
             public class Test
             {
                 public string Method()
                 {
-                    string stringProp = FaasContext.Current.Get(""StrKey"");
-                    int intProp = FaasContext.Current.Get<int>(""IntKey"");
+                    string stringProp = ChameleonContext.Current.Get(""StrKey"");
+                    int intProp = ChameleonContext.Current.Get<int>(""IntKey"");
                     return (stringProp+intProp);
                 }
             }
@@ -35,8 +35,8 @@ namespace Test.Chameleon.Faas
             script.FunctionName = "Method";
             script.IsExecutionInSandbox = false;
 
-            FaasContext.Current.Put("StrKey", "888");
-            FaasContext.Current.Put("IntKey", 999);
+            ChameleonContext.Current.Put("StrKey", "888");
+            ChameleonContext.Current.Put("IntKey", 999);
 
             var result = scriptEngineProvider.Execute<string>(script);
 
