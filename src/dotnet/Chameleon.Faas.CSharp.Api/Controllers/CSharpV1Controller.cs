@@ -10,14 +10,14 @@ namespace Chameleon.Faas.CSharp.Api.Controllers
 {
     [Route("api/faas/csharp/v1")]
     [ApiController]
-    public class FaasV1Controller : ControllerBase
+    public class CSharpV1Controller : ControllerBase
     {
         private const string FaasRequestBody = "FaasRequestBody";
         private const string FaasRequestQuery = "FaasRequestQuery";
 
         private readonly ICSharpScriptService _cSharpScriptService;
 
-        public FaasV1Controller(ICSharpScriptService cSharpScriptService)
+        public CSharpV1Controller(ICSharpScriptService cSharpScriptService)
         {
             _cSharpScriptService = cSharpScriptService;
         }
