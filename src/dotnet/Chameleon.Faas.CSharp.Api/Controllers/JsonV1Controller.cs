@@ -1,5 +1,5 @@
 ﻿using Chameleon.Common.Models;
-using Chameleon.Faas.CSharp.Api.Services;
+using Chameleon.Faas.CSharp.Service;
 using Microsoft.AspNetCore.Mvc;
 using System;
 

@@ -1,10 +1,9 @@
 ﻿using Bamboo.ScriptEngine;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace Chameleon.Faas.CSharp.Api.Services
+namespace Chameleon.Faas.CSharp.Service
 {
     public interface IJsonScriptService
     {

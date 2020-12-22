@@ -2,7 +2,7 @@ using Bamboo.Logging;
 using Bamboo.ScriptEngine;
 using Bamboo.ScriptEngine.CSharp;
 using Chameleon.Faas.CSharp.Api.Controllers;
-using Chameleon.Faas.CSharp.Api.Services;
+using Chameleon.Faas.CSharp.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;

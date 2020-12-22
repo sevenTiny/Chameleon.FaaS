@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chameleon.Faas.Service\Chameleon.Faas.Service.csproj" />
+    <ProjectReference Include="..\Chameleon.Faas.CSharp.Service\Chameleon.Faas.CSharp.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
