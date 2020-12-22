@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Chameleon.Faas.Management.Application\Chameleon.Faas.Management.Application.csproj" />
+    <ProjectReference Include="..\Chameleon.Faas.Management.Entities\Chameleon.Faas.Management.Entities.csproj" />
+    <ProjectReference Include="..\Chameleon.Faas.Management.Infrastructure\Chameleon.Faas.Management.Infrastructure.csproj" />
+    <ProjectReference Include="..\Chameleon.Faas.Management.Repository\Chameleon.Faas.Management.Repository.csproj" />
+    <ProjectReference Include="..\Chameleon.Faas.Management.Service\Chameleon.Faas.Management.Service.csproj" />
+  </ItemGroup>
+
+</Project>
