@@ -41,5 +41,7 @@ namespace Bamboo.ScriptEngine
         Pascal = 16,
         [Description("Json")]
         Json = 17,
+        [Description("Xml")]
+        Xml = 18,
     }
 }
