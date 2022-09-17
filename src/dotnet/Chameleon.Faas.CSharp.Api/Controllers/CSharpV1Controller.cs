@@ -1,6 +1,6 @@
 ﻿using Chameleon.Common.Context;
 using Chameleon.Common.Models;
-using Chameleon.Faas.CSharp.Api.Services;
+using Chameleon.Faas.CSharp.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,14 +10,11 @@ namespace Chameleon.Faas.CSharp.Api.Controllers
 {
     [Route("api/faas/csharp/v1")]
     [ApiController]
-    public class FaasV1Controller : ControllerBase
+    public class CSharpV1Controller : ControllerBase
     {
-        private const string FaasRequestBody = "FaasRequestBody";
-        private const string FaasRequestQuery = "FaasRequestQuery";
-
         private readonly ICSharpScriptService _cSharpScriptService;
 
-        public FaasV1Controller(ICSharpScriptService cSharpScriptService)
+        public CSharpV1Controller(ICSharpScriptService cSharpScriptService)
         {
             _cSharpScriptService = cSharpScriptService;
         }
@@ -45,8 +42,8 @@ namespace Chameleon.Faas.CSharp.Api.Controllers
                 return Ok(ResponseModel.Error(50003, "scriptId 参数不正确"));
 
             //赋值上下文
-            ChameleonContext.Current.Put(FaasRequestQuery, HttpContext.Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString()));
-            ChameleonContext.Current.Put(FaasRequestBody, argument);
+            ChameleonContext.Current.Put(ChameleonContext.Const.RequestQuery, HttpContext.Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString()));
+            ChameleonContext.Current.Put(ChameleonContext.Const.RequestBody, argument);
 
             var result = _cSharpScriptService.Run(id);
 

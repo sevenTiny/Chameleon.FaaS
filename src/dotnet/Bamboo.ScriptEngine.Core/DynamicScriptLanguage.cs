@@ -38,6 +38,10 @@ namespace Bamboo.ScriptEngine
         [Description("Fortran")]
         Fortran = 15,
         [Description("Pascal")]
-        Pascal = 16
+        Pascal = 16,
+        [Description("Json")]
+        Json = 17,
+        [Description("Xml")]
+        Xml = 18,
     }
 }

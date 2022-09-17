@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Chameleon.Faas.CSharp.Api.Services
+namespace Chameleon.Faas.CSharp.Service
 {
     public interface ICSharpScriptService
     {

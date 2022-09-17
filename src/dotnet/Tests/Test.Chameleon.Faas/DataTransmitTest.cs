@@ -26,7 +26,7 @@ namespace Test.Chameleon.Faas
                 public string Method()
                 {
                     string stringProp = ChameleonContext.Current.Get(""StrKey"");
-                    int intProp = ChameleonContext.Current.Get<int>(""IntKey"");
+                    int intProp = ChameleonContext.Current.Get(""IntKey"");
                     return (stringProp+intProp);
                 }
             }
