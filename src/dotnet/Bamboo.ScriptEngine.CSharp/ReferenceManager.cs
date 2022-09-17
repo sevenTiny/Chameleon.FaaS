@@ -86,12 +86,19 @@ namespace Bamboo.ScriptEngine.CSharp
 
             _logger.LogInformation($"bamboo script engine csharp compnent -> scan config dirs: [{string.Join(",", dllScanAndLoadPath)}]");
 
+            var currentPath = AppDomain.CurrentDomain.BaseDirectory;
+
             foreach (var dllPath in dllScanAndLoadPath)
             {
-                //如果配置的是文件，则按文件加载
+                //如果配置的是文件，则按文件加载（绝对路径）
                 if (File.Exists(dllPath))
                 {
                     loadLocations.Add(dllPath);
+                }
+                //如果配置的是文件，则按文件加载（相对路径）
+                else if (File.Exists(Path.Combine(currentPath, dllPath)))
+                {
+                    loadLocations.Add(Path.Combine(currentPath, dllPath));
                 }
                 //如果配置的是文件夹，那么将目录下的所有dll都加载
                 else if (Directory.Exists(dllPath))
