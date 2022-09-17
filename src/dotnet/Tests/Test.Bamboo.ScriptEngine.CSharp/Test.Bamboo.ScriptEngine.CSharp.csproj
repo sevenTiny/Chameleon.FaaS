@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Bamboo.ScriptEngine.Core\Bamboo.ScriptEngine.Core.csproj" />
     <ProjectReference Include="..\..\Bamboo.ScriptEngine.CSharp\Bamboo.ScriptEngine.CSharp.csproj" />
   </ItemGroup>
 
